@@ -8,7 +8,7 @@ import {
     Text
 } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import styles from "./styles"
+import styles from "./style"
 import {LinearGradient} from "expo-linear-gradient"
 //react navigation
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';

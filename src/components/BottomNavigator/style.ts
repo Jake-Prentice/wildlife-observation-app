@@ -9,7 +9,9 @@ export default StyleSheet.create({
         borderTopRightRadius: 20, 
         position: 'absolute',
         bottom: 0,
-        padding: 5, 
+        paddingTop: 5, // Top padding
+        paddingHorizontal: 5, // Left and right padding
+        paddingBottom: 14, // Bottom padding overridden
         width: '90%', 
         alignSelf: 'center',
         shadowColor: '#000', 
@@ -21,7 +23,7 @@ export default StyleSheet.create({
         shadowRadius: 3.84,
         elevation: 5,
         flexDirection: 'row',
-        height: 80,
+        height: 90,
         justifyContent: 'center',
     },
 

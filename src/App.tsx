@@ -11,13 +11,11 @@ import {
 import { config } from "@gluestack-ui/config" // Optional if you want to use default theme
 //react navigation
 import { NavigationContainer} from '@react-navigation/native';
-import BottomNavigator from './navigation/BottomNavigator';
+import BottomNavigator from './components/BottomNavigator';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-//firebase
-import {FIREBASE_AUTH} from "./FirebaseConfig";
-import { User, onAuthStateChanged } from "firebase/auth"
 //screens
 import {LoginScreen, RegisterScreen} from './screens/auth';
+import { UserProvider, useUser } from './contexts/UserContext';
 
 const Stack = createNativeStackNavigator();
 
@@ -30,20 +28,20 @@ const AuthStack = () => {
   );
 };
 
+const Routes = () => {
+  const user = useUser();
+  return !user.info ? <AuthStack /> : <BottomNavigator />
+}
+
 export default function App() {
-  const [user, setUser] = useState<User | null>(null);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, setUser);
-    return unsubscribe; 
-  }, []);
-
   return (
     <GluestackUIProvider config={config}>
-      <NavigationContainer>
-        {!user ? <AuthStack /> : <BottomNavigator />}
-        <StatusBar style="auto" />
-      </NavigationContainer>
+      <UserProvider>
+        <NavigationContainer>
+          <Routes />
+          <StatusBar style="auto" />
+        </NavigationContainer>
+      </UserProvider>
     </GluestackUIProvider>
   );
 };
