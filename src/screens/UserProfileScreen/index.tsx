@@ -2,6 +2,7 @@ import { useUser } from '@/contexts/UserContext';
 import { Button, ButtonText} from '@gluestack-ui/themed';
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import {testAdd, testGet} from "src/services/observations"
 
 const UserProfileScreen = () => {
     const user = useUser(); 
@@ -18,6 +19,26 @@ const UserProfileScreen = () => {
                 isFocusVisible={false}
                 >
                 <ButtonText>Logout </ButtonText>
+            </Button>
+            <Button
+                onPress={testAdd}
+                size="md"
+                variant="solid"
+                action="primary"
+                isDisabled={false}
+                isFocusVisible={false}
+                >
+                <ButtonText>Test Firestore </ButtonText>
+            </Button>
+            <Button
+                onPress={testGet}
+                size="md"
+                variant="solid"
+                action="primary"
+                isDisabled={false}
+                isFocusVisible={false}
+                >
+                <ButtonText>Test Get Firestore </ButtonText>
             </Button>
         </View>
     );
