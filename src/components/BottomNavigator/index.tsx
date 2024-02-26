@@ -1,25 +1,14 @@
 //native
-import {
-    StyleProp, 
-    StyleSheet, 
+import { 
     TouchableOpacity, 
     View, 
-    ViewStyle, 
     Text
 } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import styles from "./style"
 import {LinearGradient} from "expo-linear-gradient"
-//react navigation
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-//screens
-import MapScreen from "../../screens/MapScreen"
-import UserProfileScreen from "../../screens/UserProfileScreen"
-import AchievementScreen from '../../screens/AchievementScreen';
-import NotificationScreen from '../../screens/NotificationScreen';
-import AddObservationScreen from '../../screens/AddObservationScreen';
-
-const Tab = createBottomTabNavigator();
+import useCamera from '@/hooks/useCamera';
+import { useEffect } from 'react';
 
 //maps from route name to icon code
 function getIconCode(routeName: string): string {
@@ -39,9 +28,20 @@ function getIconCode(routeName: string): string {
     }
 }
 
-//TODO - give types to these props, refer to LoginScreen to see how
 //custom bottom navigator
-function MyBottomNavigtor({ state, descriptors, navigation }: { state: any, descriptors: any, navigation: any }) {
+const BottomNavigtor = (
+    { state, descriptors, navigation }: 
+    { state: any, descriptors: any, navigation: any }) =>{
+    
+    const camera = useCamera();
+
+    useEffect(() => {
+        //if the user has selected a photo, navigate to the add screen
+        if (camera.currentPhoto != null) {
+            navigation.navigate('Add', {photo: camera.currentPhoto})
+        }
+    }, [camera.currentPhoto])
+    
     return (
         <View style={styles.tabContainer}>
             {state.routes.map((route: any, index: any) => {
@@ -76,13 +76,13 @@ function MyBottomNavigtor({ state, descriptors, navigation }: { state: any, desc
 
                 //the middle add observation button
                 if (route.name == "Add") return (  
-                        <TouchableOpacity
+                    <TouchableOpacity
                         key={route.key}
                         accessibilityRole="button"
                         accessibilityState={isFocused ? { selected: true } : {}}
                         accessibilityLabel={options.tabBarAccessibilityLabel}
                         testID={options.tabBarTestID}
-                        onPress={onPress}
+                        onPress={camera.handleCameraRequest}
                         onLongPress={onLongPress}
                         style={styles.addObservationContainer}
                     >
@@ -125,14 +125,4 @@ function MyBottomNavigtor({ state, descriptors, navigation }: { state: any, desc
     );
 }
 
-export default function BottomNavigator() {
-    return (
-        <Tab.Navigator tabBar={props => <MyBottomNavigtor {...props} />}  >
-        <Tab.Screen name="Map" component={MapScreen} />
-        <Tab.Screen name="Rewards" component={AchievementScreen} />
-        <Tab.Screen name="Add" component={AddObservationScreen} />
-        <Tab.Screen name="Notifica" component={NotificationScreen} />
-        <Tab.Screen name="Profile" component={UserProfileScreen} />
-        </Tab.Navigator>
-    );
-}
+export default BottomNavigtor

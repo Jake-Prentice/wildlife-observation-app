@@ -26,7 +26,7 @@ const MapScreen = () => {
                 latitude: location.coords.latitude,
                 longitude: location.coords.longitude,
                 ...defaultZoomDistance
-            }, 1000); // 1000 ms duration
+            }, 500); // 500 ms duration
         }
     };
 

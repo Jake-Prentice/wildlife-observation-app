@@ -6,22 +6,12 @@ import { FirebaseError } from 'firebase/app';
 import { RouteProp, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import styles from "./style";
+import { AuthStackParamList } from '@/navigation/AuthStack';
 
-type RootStackParamList = {
-  Home: undefined;
-  Register: undefined;
-};
-
-// type HomeScreenRouteProp = RouteProp<RootStackParamList, 'Home'>;
-type RegisterScreenRouteProp = RouteProp<RootStackParamList, 'Register'>;
-
-type RegisterScreenNavigationProp = NativeStackNavigationProp<
-  RootStackParamList,
-  'Register'
->;
+export type LoginScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList,'Login'>;
 
 type Props = {
-  navigation: RegisterScreenNavigationProp;
+  navigation: LoginScreenNavigationProp;
 };
 
 const LoginScreen = ({navigation}: Props) => {

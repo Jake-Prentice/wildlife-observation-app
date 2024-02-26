@@ -5,8 +5,18 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { FIREBASE_AUTH } from '../../FirebaseConfig'; // Adjust the import path as necessary
 import { FirebaseError } from 'firebase/app';
 import styles from "./style"
+import { RouteProp } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { AuthStackParamList } from '@/navigation/AuthStack';
 
-const RegisterScreen = ({navigation}: {navigation:any}) => {
+export type RegisterScreenRouteProp = RouteProp<AuthStackParamList, 'Register'>;
+export type RegisterScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList,'Register'>;
+
+type Props = {
+  navigation: RegisterScreenNavigationProp;
+};
+
+const RegisterScreen = ({navigation}: Props) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');

@@ -6,7 +6,16 @@ export const getObservations = async () => {
   return snapshot.docs.map((doc: any) => doc.data());
 };
 
-export const addObservation = async (observation: any) => {
+type Observation = {
+    species: string;
+    description: string;
+    latitude: number;
+    longitude: number;
+    // timestamp: string;
+    // image: string;
+}
+
+export const addObservation = async (observation: Observation) => {
   await addDoc(collection(db, "observations"), observation);
 };
 

@@ -1,7 +1,22 @@
-import React from 'react';
+import { BottomTabParamList } from '@/navigation/BottomNavigatorStack';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import { RouteProp } from '@react-navigation/native';
+import React, { useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-const AddObservationScreen = () => {
+
+export type AddScreenRouteProp = RouteProp<BottomTabParamList, 'Add'>;
+export type AddScreenNavigationProp = BottomTabNavigationProp<BottomTabParamList,'Add'>;
+
+type Props = {
+    route: AddScreenRouteProp;
+};
+
+const AddObservationScreen = ({ route }: Props) => {
+    useEffect(() => {
+        console.log("camera", route.params?.photo);
+    }, [route.params?.photo]);
+
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Welcome to the Add observation Screen!</Text>
