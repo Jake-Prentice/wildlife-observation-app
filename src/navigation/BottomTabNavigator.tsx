@@ -17,7 +17,7 @@ export type BottomTabParamList  = {
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
 
-export default function BottomNavigatorStack() {
+const BottomTabNavigator = () => {
     return (
         <Tab.Navigator tabBar={props => <BottomNavigtor {...props} />}  >
             <Tab.Screen name="Map" component={MapScreen} />
@@ -28,3 +28,5 @@ export default function BottomNavigatorStack() {
         </Tab.Navigator>
     );
 }
+
+export default BottomTabNavigator;

@@ -9,13 +9,14 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 //screens
 import {LoginScreen, RegisterScreen} from './screens/auth';
 import { UserProvider, useUser } from './contexts/UserContext';
-import BottomNavigatorStack from './navigation/BottomNavigatorStack';
-import AuthStack, { AuthStackParamList } from './navigation/AuthStack';
+//navigation
+import AuthStackNavigator from './navigation/AuthStackNavigtor';
+import BottomTabNavigator from './navigation/BottomTabNavigator';
 
 const Routes = () => {
   const user = useUser();
   //TODO - don't want to show bottom navigator if on AddObservationScreen
-  return !user.info ? <AuthStack /> : <BottomNavigatorStack />
+  return !user.info ? <AuthStackNavigator /> : <BottomTabNavigator />
 }
 
 export default function App() {

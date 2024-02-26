@@ -1,4 +1,4 @@
-import { BottomTabParamList } from '@/navigation/BottomNavigatorStack';
+import { BottomTabParamList } from '@/navigation/BottomTabNavigator';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { RouteProp } from '@react-navigation/native';
 import React, { useEffect } from 'react';

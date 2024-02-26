@@ -6,7 +6,7 @@ import { FirebaseError } from 'firebase/app';
 import { RouteProp, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import styles from "./style";
-import { AuthStackParamList } from '@/navigation/AuthStack';
+import { AuthStackParamList } from '@/navigation/AuthStackNavigtor';
 
 export type LoginScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList,'Login'>;
 
