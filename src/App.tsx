@@ -4,7 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import {GluestackUIProvider} from "@gluestack-ui/themed"
 import { config } from "@gluestack-ui/config" // Optional if you want to use default theme
 //react navigation
-import { NavigationContainer} from '@react-navigation/native';
+import { NavigationContainer, getFocusedRouteNameFromRoute} from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 //screens
 import {LoginScreen, RegisterScreen} from './screens/auth';
@@ -16,13 +16,33 @@ import ObservationStackNavigator from './navigation/ObservationStackNavigator';
 
 const RootStack = createNativeStackNavigator();
 
+//this is so fucking scuffed, but I can't find any other solution
+function getMainHeaderTitle(route:any) {
+  const routeName = getFocusedRouteNameFromRoute(route) ?? 'Map';
+  switch (routeName) {
+    case 'Map':
+      return 'Map feed';
+    case 'Profile':
+      return 'My profile';
+    case 'Notifica':
+      return 'Notifications';
+    case 'Rewards':
+      return 'Rewards';
+  }
+}
 
- 
+const getObservationHeaderTitle = (route: any) => {
+  const routeName = getFocusedRouteNameFromRoute(route) ?? 'Add Observation';
+  switch (routeName) {
+    case 'AddObservation':
+      return 'Add observation';
+  }
 
+}
 const Routes = () => {
   const user = useUser();
   return (
-    <RootStack.Navigator screenOptions={{headerShown: true}}>
+    <RootStack.Navigator >
         {!user.info ? (
           <>
             <RootStack.Screen name="Login" component={LoginScreen} />
@@ -30,8 +50,16 @@ const Routes = () => {
           </>
         ) : (
         <>
-          <RootStack.Screen name="main" component={BottomTabNavigator} />
-          <RootStack.Screen name="observation" component={ObservationStackNavigator} />
+          <RootStack.Screen 
+              name="Main" 
+              component={BottomTabNavigator} 
+              options={({ route }) => ({headerTitle: getMainHeaderTitle(route)})}
+          />
+          <RootStack.Screen 
+              name="Observation" 
+              component={ObservationStackNavigator} 
+              options={({ route }) => ({headerTitle: getObservationHeaderTitle(route)})}
+          />
         </>)}
     </RootStack.Navigator>
   );

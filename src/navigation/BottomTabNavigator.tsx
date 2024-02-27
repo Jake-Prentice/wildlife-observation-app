@@ -19,7 +19,7 @@ const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
 const BottomTabNavigator = () => {
     return (
-        <BottomTab.Navigator tabBar={props => <BottomNavigtor {...props} />}>
+        <BottomTab.Navigator screenOptions={{headerShown:false}} tabBar={props => <BottomNavigtor {...props} />}>
             <BottomTab.Screen name="Map" component={MapScreen} />
             <BottomTab.Screen name="Rewards" component={AchievementScreen} />
             <BottomTab.Screen name="Notifica" component={NotificationScreen} />

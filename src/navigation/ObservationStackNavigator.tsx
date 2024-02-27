@@ -11,11 +11,11 @@ const ObservationStack = createNativeStackNavigator<ObservationStackParamList>()
 //is a nested stack of the BottomTabNavigator
 const ObservationStackNavigator = () => {
     return (
-        <ObservationStack.Navigator >
+        <ObservationStack.Navigator screenOptions={{headerShown:false}} >
             <ObservationStack.Screen 
                 name="AddObservation" 
                 component={AddObservationScreen} 
-                options={{ headerShown: true }} 
+                // options={{ headerShown: false }} 
             />
         </ObservationStack.Navigator>
     );

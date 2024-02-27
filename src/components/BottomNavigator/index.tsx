@@ -38,7 +38,7 @@ const BottomNavigtor = (
     useEffect(() => {
         //if the user has selected a photo, navigate to the add screen
         if (camera.currentPhoto != null) {
-            navigation.navigate('observation', {photo: camera.currentPhoto})
+            navigation.navigate('Observation', {photo: camera.currentPhoto})
         }
     }, [camera.currentPhoto])
     
