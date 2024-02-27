@@ -1,12 +1,13 @@
 import { BottomTabParamList } from '@/navigation/BottomTabNavigator';
+import { ObservationStackParamList } from '@/navigation/ObservationStackNavigator';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { RouteProp } from '@react-navigation/native';
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
 
-export type AddScreenRouteProp = RouteProp<BottomTabParamList, 'Add'>;
-export type AddScreenNavigationProp = BottomTabNavigationProp<BottomTabParamList,'Add'>;
+export type AddScreenRouteProp = RouteProp<ObservationStackParamList, 'AddObservation'>;
+export type AddScreenNavigationProp = BottomTabNavigationProp<ObservationStackParamList,'AddObservation'>;
 
 type Props = {
     route: AddScreenRouteProp;

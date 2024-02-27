@@ -10,13 +10,31 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import {LoginScreen, RegisterScreen} from './screens/auth';
 import { UserProvider, useUser } from './contexts/UserContext';
 //navigation
-import AuthStackNavigator from './navigation/AuthStackNavigtor';
+// import AuthStackNavigator from './navigation/AuthStackNavigtor';
 import BottomTabNavigator from './navigation/BottomTabNavigator';
+import ObservationStackNavigator from './navigation/ObservationStackNavigator';
+
+const RootStack = createNativeStackNavigator();
+
+
+ 
 
 const Routes = () => {
   const user = useUser();
-  //TODO - don't want to show bottom navigator if on AddObservationScreen
-  return !user.info ? <AuthStackNavigator /> : <BottomTabNavigator />
+  return (
+    <RootStack.Navigator screenOptions={{headerShown: true}}>
+        {!user.info ? (
+          <>
+            <RootStack.Screen name="Login" component={LoginScreen} />
+            <RootStack.Screen name="Register" component={RegisterScreen} />
+          </>
+        ) : (
+        <>
+          <RootStack.Screen name="main" component={BottomTabNavigator} />
+          <RootStack.Screen name="observation" component={ObservationStackNavigator} />
+        </>)}
+    </RootStack.Navigator>
+  );
 }
 
 export default function App() {
