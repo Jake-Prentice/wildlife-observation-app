@@ -38,7 +38,7 @@ const BottomNavigtor = (
     useEffect(() => {
         //if the user has selected a photo, navigate to the add screen
         if (camera.currentPhoto != null) {
-            navigation.navigate('AddObservation', {photo: camera.currentPhoto})
+            navigation.navigate('Observation', {screen: "AddObservation", params: {photo: camera.currentPhoto}})
         }
     }, [camera.currentPhoto])
     
@@ -72,7 +72,7 @@ const BottomNavigtor = (
                     });
 
                     if (!isFocused && !event.defaultPrevented) {
-                        navigation.navigate(route.name, route.params);
+                        navigation.navigate("Main", {screen: route.name, params: route.params});
                     }
                 };
 

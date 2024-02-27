@@ -15,7 +15,6 @@ const ObservationStackNavigator = () => {
             <ObservationStack.Screen 
                 name="AddObservation" 
                 component={AddObservationScreen} 
-                // options={{ headerShown: false }} 
             />
         </ObservationStack.Navigator>
     );
