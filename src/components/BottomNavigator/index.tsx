@@ -38,10 +38,11 @@ const BottomNavigtor = (
     useEffect(() => {
         //if the user has selected a photo, navigate to the add screen
         if (camera.currentPhoto != null) {
-            navigation.navigate('Observation', {photo: camera.currentPhoto})
+            navigation.navigate('AddObservation', {photo: camera.currentPhoto})
         }
     }, [camera.currentPhoto])
     
+    //this is ugly as hell :/
     const routes = [
         state.routes[0], 
         state.routes[1], 
@@ -85,7 +86,7 @@ const BottomNavigtor = (
                 //the middle add observation button
                 if (route.name == "Add") return (  
                     <TouchableOpacity
-                        key={route.key}
+                        key={"123456"} //can't use route.key since I'm duplicating the previous route
                         accessibilityRole="button"
                         accessibilityLabel={options.tabBarAccessibilityLabel}
                         onPress={camera.handleCameraRequest}

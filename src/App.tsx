@@ -10,7 +10,6 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import {LoginScreen, RegisterScreen} from './screens/auth';
 import { UserProvider, useUser } from './contexts/UserContext';
 //navigation
-// import AuthStackNavigator from './navigation/AuthStackNavigtor';
 import BottomTabNavigator from './navigation/BottomTabNavigator';
 import ObservationStackNavigator from './navigation/ObservationStackNavigator';
 
@@ -32,12 +31,11 @@ function getMainHeaderTitle(route:any) {
 }
 
 const getObservationHeaderTitle = (route: any) => {
-  const routeName = getFocusedRouteNameFromRoute(route) ?? 'Add Observation';
-  switch (routeName) {
-    case 'AddObservation':
-      return 'Add observation';
-  }
-
+    const routeName = getFocusedRouteNameFromRoute(route) ?? 'Add Observation';
+    switch (routeName) {
+        case 'AddObservation':
+            return 'Add observation';
+    }
 }
 const Routes = () => {
   const user = useUser();
