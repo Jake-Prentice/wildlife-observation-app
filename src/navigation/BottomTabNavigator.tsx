@@ -6,26 +6,25 @@ import AddObservationScreen from 'src/screens/AddObservationScreen';
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import BottomNavigtor from "@/components/BottomNavigator";
 import { ImagePickerAsset } from "expo-image-picker";
+import ObservationStackNavigator from "./ObservationStackNavigator";
 
 export type BottomTabParamList  = {
-    Add: {photo: ImagePickerAsset};
     Map: undefined; 
     Rewards: undefined; 
     Notifica: undefined; 
     Profile: undefined;
 }
 
-const Tab = createBottomTabNavigator<BottomTabParamList>();
+const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
 const BottomTabNavigator = () => {
     return (
-        <Tab.Navigator tabBar={props => <BottomNavigtor {...props} />}  >
-            <Tab.Screen name="Map" component={MapScreen} />
-            <Tab.Screen name="Rewards" component={AchievementScreen} />
-            <Tab.Screen name="Add" component={AddObservationScreen} />
-            <Tab.Screen name="Notifica" component={NotificationScreen} />
-            <Tab.Screen name="Profile" component={UserProfileScreen} />
-        </Tab.Navigator>
+        <BottomTab.Navigator screenOptions={{headerShown:false}} tabBar={props => <BottomNavigtor {...props} />}>
+            <BottomTab.Screen name="Map" component={MapScreen} />
+            <BottomTab.Screen name="Rewards" component={AchievementScreen} />
+            <BottomTab.Screen name="Notifica" component={NotificationScreen} />
+            <BottomTab.Screen name="Profile" component={UserProfileScreen} />
+        </BottomTab.Navigator>
     );
 }
 
