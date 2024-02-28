@@ -2,11 +2,8 @@ import MapScreen from "src/screens/MapScreen"
 import UserProfileScreen from "src/screens/UserProfileScreen"
 import AchievementScreen from 'src/screens/AchievementScreen';
 import NotificationScreen from 'src/screens/NotificationScreen';
-import AddObservationScreen from 'src/screens/AddObservationScreen';
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import BottomNavigtor from "@/components/BottomNavigator";
-import { ImagePickerAsset } from "expo-image-picker";
-import ObservationStackNavigator from "./ObservationStackNavigator";
 
 export type BottomTabParamList  = {
     Map: undefined; 

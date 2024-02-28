@@ -20,7 +20,7 @@ function getMainHeaderTitle(route:any) {
   const routeName = getFocusedRouteNameFromRoute(route) ?? 'Map';
   switch (routeName) {
     case 'Map':
-      return 'Map feed';
+      return 'Map';
     case 'Profile':
       return 'My profile';
     case 'Notifica':

@@ -1,12 +1,14 @@
 import { StyleSheet } from 'react-native';
 
+const marginBottom=40;
+
 const styles = StyleSheet.create({
     container: {
         height: "100%",
         width: "100%",
-        borderColor: 'blue',
-        borderWidth: 1,
-      padding: 20,
+        // borderColor: 'blue',
+        // borderWidth: 1,
+      padding: 13,
     },
     helpButton: {
       alignSelf: 'flex-end',
@@ -17,7 +19,7 @@ const styles = StyleSheet.create({
       color: '#0000FF',
     },
     inputContainer: {
-      marginBottom: 20,
+      marginBottom: marginBottom,
     },
     label: {
       fontSize: 16,
@@ -35,7 +37,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 20,
+        marginBottom: marginBottom,
     },
       image: {
         flex: 1, 

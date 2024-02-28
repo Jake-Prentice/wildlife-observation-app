@@ -4,11 +4,6 @@ import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import * as Location from 'expo-location';
 import {FontAwesome6} from '@expo/vector-icons';
 
-//example long+lat: 51.371989, -2.341385
-// const Map = () => {
-//     return ()
-// }
-
 //the latitudeDelta and longitudeDelta determine the zoom level of the map
 const defaultZoomDistance = { 
     latitudeDelta: 0.0922,
@@ -42,7 +37,6 @@ const MapScreen = () => {
 
             let location = await Location.getCurrentPositionAsync({});
             setLocation(location);
-            console.log("user location: ", location);
         })();
     }, []);
 

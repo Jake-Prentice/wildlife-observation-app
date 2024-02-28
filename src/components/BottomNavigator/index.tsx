@@ -37,10 +37,13 @@ const BottomNavigtor = (
 
     useEffect(() => {
         //if the user has selected a photo, navigate to the add screen
-        if (camera.currentPhoto != null) {
-            navigation.navigate('Observation', {screen: "AddObservation", params: {photo: camera.currentPhoto}})
+        if (camera.current) {
+            navigation.navigate('Observation', {
+                screen: "AddObservation", 
+                params: {image: camera}
+            })
         }
-    }, [camera.currentPhoto])
+    }, [camera.result])
     
     //this is ugly as hell :/
     const routes = [

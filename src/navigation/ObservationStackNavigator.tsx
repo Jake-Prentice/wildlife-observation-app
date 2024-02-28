@@ -1,9 +1,10 @@
+import { UseCamera } from '@/hooks/useCamera';
 import AddObservationScreen from '@/screens/AddObservationScreen';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { ImagePickerAsset } from 'expo-image-picker';
+import { ImagePickerAsset, ImagePickerResult } from 'expo-image-picker';
 
 export type ObservationStackParamList  = {
-    AddObservation: {photo: ImagePickerAsset};
+    AddObservation: {image: UseCamera};
 }
 
 const ObservationStack = createNativeStackNavigator<ObservationStackParamList>();
