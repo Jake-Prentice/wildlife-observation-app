@@ -8,6 +8,15 @@ import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, ScrollView,
 import useCamera, { UseCamera } from '@/hooks/useCamera';
 import styles from './style';
 import * as ImagePicker from 'expo-image-picker';
+import { manageFileUpload } from '@/services/observations';
+import ImageOrPlaceholder from '@/components/ImageOrPlaceholder';
+import {
+    Button,
+    ButtonText,
+    ButtonIcon,
+    ButtonSpinner,
+    ButtonGroup,
+  } from "@gluestack-ui/themed"
 
 export type AddScreenRouteProp = RouteProp<ObservationStackParamList, 'AddObservation'>;
 export type AddScreenNavigationProp = BottomTabNavigationProp<ObservationStackParamList,'AddObservation'>;
@@ -16,39 +25,16 @@ type Props = {
     route: AddScreenRouteProp;
 };
 
-//either displays the image or the placeholder,
-//also allows the user to change the photo but holding down on the image
-const ImageOrPlaceholder = ({image, style}: {image: UseCamera, style:any}) => {
-    //TODO - don't know why the no comes before the yes, weird but fix this
-    const triggerChangeModal = () => {
-        Alert.alert(
-            'Change Photo',
-            'are you sure you want to change the photo?',
-            [
-                { text: 'Yes', onPress: image.reset},
-                { text: 'No', style: 'cancel' },
-            ],
-        );
-    }
-
-    if (image.current != undefined) return (
-        <ImageModal 
-            onLongPress={triggerChangeModal} 
-            style={style} 
-            source={image.current.uri} 
-        />
-    )
-
-    return (
-      <TouchableOpacity onPress={image.handleCameraRequest} style={styles.imagePlaceholder}>
-        <Text style={styles.imagePlaceholderText}>+</Text>
-      </TouchableOpacity>
-    );
+const getImageBlob = async (image: UseCamera) => {
+    if (!image.current) return;
+    const response = await fetch(image.current.uri)
+    const blob = await response.blob();
 }
 
 const AddObservationScreen = ({ route }: Props) => {
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
+    const [isUploading, setIsUploading] = useState(false);   
 
     useEffect(() => {
 
@@ -67,8 +53,20 @@ const AddObservationScreen = ({ route }: Props) => {
       // TODO: Implement what should happen when help is pressed
     };
   
-    const handleSubmitPress = () => {
-      // TODO: Implement the submission logic
+    const onStart = () => {
+        setIsUploading(true);
+    }
+    const onComplete = () => {
+        setIsUploading(false)
+    }
+
+    const onProgress = () => {}
+    const onFail = () => {}
+
+    const handleSubmitPress = async () => {
+        if (!image1.current) return;
+        
+        // manageFileUpload(blob, {onStart, onProgress, onComplete, onFail})
     };
   
     return (
@@ -100,7 +98,14 @@ const AddObservationScreen = ({ route }: Props) => {
             multiline
           />
         </View>
+        {/* <Button onPress={handleSubmitPress} isDisabled={isUploading} bg="$darkBlue600" p="$3">
+            {isUploading && <ButtonSpinner mr="$1" />}
+            <ButtonText fontWeight="$medium" fontSize="$md">
+                {isUploading? "Please wait..." : "Submit"}
+            </ButtonText>
+        </Button> */}
         <TouchableOpacity onPress={handleSubmitPress} style={styles.submitButton}>
+            {isUploading && <ButtonSpinner mr="$1" />}
           <Text style={styles.submitButtonText}>Submit</Text>
         </TouchableOpacity>
       </ScrollView>

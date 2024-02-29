@@ -28,6 +28,7 @@ const useCamera = (initial?: ImagePicker.ImagePickerResult): UseCamera  => {
 
     //ensure location data on image
     useEffect(() => {
+        console.log(current?.height, current?.width)
         if (current && !current.exif?.GPSLatitude && !current.exif?.GPSLongitude) {
             Alert.alert('No Location Data', 'This photo does not contain location data, please select another photo.')
             reset();
@@ -39,14 +40,14 @@ const useCamera = (initial?: ImagePicker.ImagePickerResult): UseCamera  => {
         from the launchCameraAsync, so we have to manually add it in.    
     */
     const takePhoto = async () => {
-
         let result = await ImagePicker.launchCameraAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             exif: true,
             allowsEditing: true,
             aspect: [4, 3],
-            quality: 1,
+            quality: 0.5,
         });
+
 
         if (!result.canceled) {
             let location = await Location.getCurrentPositionAsync({});

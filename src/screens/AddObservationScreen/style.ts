@@ -4,11 +4,11 @@ const marginBottom=40;
 
 const styles = StyleSheet.create({
     container: {
-        height: "100%",
-        width: "100%",
         // borderColor: 'blue',
         // borderWidth: 1,
-      padding: 13,
+        height: "100%",
+        width: "100%",
+        padding: 13,
     },
     helpButton: {
       alignSelf: 'flex-end',
@@ -39,23 +39,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: marginBottom,
     },
-      image: {
+    image: {
         flex: 1, 
         aspectRatio: 1, 
         marginHorizontal: 2, 
-      },
-      imagePlaceholder: {
-        flex: 1, // each placeholder will take up equal space
-        aspectRatio: 1, // if you want to keep your placeholders as squares
-        marginHorizontal: 5, // this will ensure a little space between the placeholders
-        backgroundColor: '#e4e4e4',
-        alignItems: 'center',
-        justifyContent: 'center',
-        // Adjust borderRadius and other styles as needed
-      },
-    imagePlaceholderText: {
-      fontSize: 24,
-      color: '#000',
     },
     textArea: {
       borderWidth: 1,
@@ -70,6 +57,8 @@ const styles = StyleSheet.create({
       padding: 15,
       borderRadius: 5,
       alignItems: 'center',
+      flexDirection: 'row',
+      justifyContent: 'center',
     },
     submitButtonText: {
       fontSize: 18,

@@ -29,7 +29,7 @@ const ImageModal: React.FC<ImageModalProps> = ({ source, style, onLongPress}) =>
             style={styles(style).closeButton}
             onPress={() => setModalVisible(false)}
           >
-            <AntDesign name="closecircle" size={24} color="white" />
+            <AntDesign name="closecircle" size={30} color="white" />
           </TouchableOpacity>
           <Image source={source} style={styles(style).modalImage} />
         </View>
