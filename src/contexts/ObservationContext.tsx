@@ -71,39 +71,47 @@ export type ObservationToUpload = {
     images: ImageToUpload[]
 }
 
-//will handle the optimistic update
-export const addObservation = async (
-    {animalName, description, images}: 
-    {animalName: string, description: string, images: UseCamera[]}
-) => {
-    const observation: ObservationToUpload = {animalName, description} as ObservationToUpload
-    //the images the user didn't leave blank 
-    const filteredImages = images.filter(image => image.result !== undefined);
-
-    observation.images = filteredImages.map(image => ({
-        uri: image.current!.uri,
-        metadata: {
-            latitude: JSON.stringify(image.current?.exif?.GPSLatitude),
-            longitude: JSON.stringify(image.current?.exif?.GPSLongitude),
-        }
-    }));
-    
-    observation.timestamp = getMostRecentTimestamp(filteredImages).toISOString();
-    observation.location = getLocationInfo(filteredImages);
-
-    //upload to firebase
-    await services.addObservation(observation);
-}
 
 export interface IObservationsValue {
-    data: services.ObservationSchema[];
+    //the id gets added in the onSnapshot
+    data: (services.ObservationSchema & {id: string})[];
+    add: (observation: {animalName: string, description: string, images: UseCamera[]}) => Promise<void>;
+    isUploading: boolean;
 }
 
 const ObservationContext = createContext<Partial<IObservationsValue>>({});
 
 export const ObservationProvider = ({ children }: { children: React.ReactNode }) => {
-    const [observations, setObservations] = useState<services.ObservationSchema[]>([]);
-    
+    const [observations, setObservations] = useState<(services.ObservationSchema & {id: string})[]>([]);
+    const [isUploading, setIsUploading] = useState(false);
+
+    const add = async (
+        {animalName, description, images}: 
+        {animalName: string, description: string, images: UseCamera[]}
+    ) => {
+        setIsUploading(true);
+        const observation: ObservationToUpload = {animalName, description} as ObservationToUpload
+        //the images the user didn't leave blank 
+        const filteredImages = images.filter(image => image.result !== undefined);
+        //get the data in the right format to upload...
+        observation.images = filteredImages.map(image => ({
+            uri: image.current!.uri,
+            metadata: {
+                latitude: JSON.stringify(image.current?.exif?.GPSLatitude),
+                longitude: JSON.stringify(image.current?.exif?.GPSLongitude),
+            }
+        }));
+        observation.timestamp = getMostRecentTimestamp(filteredImages).toISOString();
+        observation.location = getLocationInfo(filteredImages);
+        //upload to firebase
+        try{ 
+            await services.addObservation(observation);
+            setIsUploading(false);
+        }catch(err){
+           throw err;
+        }
+    }
+
     useEffect(() => {
         // Define the collection you want to listen to
         const collectionRef = collection(db, 'observations');
@@ -119,14 +127,22 @@ export const ObservationProvider = ({ children }: { children: React.ReactNode })
           // Update state with the new observations
           setObservations(updatedObservations);
         });
+
         return () => unsubscribe();
+
     }, []);
 
     const value = {
         data: observations,
+        isUploading,
+        add
     };
 
-    return <ObservationContext.Provider value={value}>{children}</ObservationContext.Provider>;
+    return (
+        <ObservationContext.Provider value={value}>
+            {children}
+        </ObservationContext.Provider>
+    )
 };
 
 export const useObservations = () => {

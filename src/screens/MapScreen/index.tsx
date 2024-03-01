@@ -1,76 +1,99 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
+import MapView, {LatLng, Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import * as Location from 'expo-location';
 import {FontAwesome6} from '@expo/vector-icons';
 import { useObservations } from '@/contexts/ObservationContext';
+import { RouteProp } from '@react-navigation/native';
+import { ObservationStackParamList } from '@/navigation/ObservationStackNavigator';
+import { BottomTabParamList } from '@/navigation/BottomTabNavigator';
 
 //the latitudeDelta and longitudeDelta determine the zoom level of the map
 const defaultZoomDistance = { 
     latitudeDelta: 0.0922,
     longitudeDelta: 0.0421,
 }
-const MapScreen = () => {
+
+//sort the types out JAKE!
+type Props = { 
+    route: any;
+}
+
+const MapScreen = ({route}: Props) => {
 
     const observations = useObservations();
 
-    const [location, setLocation] = useState<Location.LocationObject | null>(null);
+    const [currentLocation, setCurrentLocation] = useState<Location.LocationObject | undefined>(route.params?.initialLocation);
+
+    const [userLocation, setUserLocation] = useState<Location.LocationObject | undefined>(undefined);
+
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
     const mapRef = useRef<MapView>(null);
 
-    //animates to the user's curent location
-    const goToMyLocation = () => {
-        if (location && mapRef.current) {
+    //animates to some location
+    const goToLocation = (location: Location.LocationObject | undefined) => {
+        if (mapRef.current && location) {
             mapRef.current.animateToRegion({
                 latitude: location.coords.latitude,
                 longitude: location.coords.longitude,
                 ...defaultZoomDistance
-            }, 500); // 500 ms duration
+            }, 500); // 500 ms animation
         }
     };
 
+    //control the region of the map displayed,
+    //by the currentLocation state
     useEffect(() => {
-        console.log(observations.data)
-    }, [observations.data])
+        if (!mapRef.current || !currentLocation) return
+        goToLocation(currentLocation);
+    }, [currentLocation])
 
-    //get user location permission
+    //makes sure to ask for location permissions
     useEffect(() => {
+        //don't want to constantly poll for a location if there already is one set,
+        //it takes soooo long to load current location!
         (async () => {
             let { status } = await Location.requestForegroundPermissionsAsync();
-            
             if (status !== 'granted') {
                 setErrorMsg('Permission to access location was denied');
                 return;
             }
-
-            let location = await Location.getCurrentPositionAsync({});
-            setLocation(location);
+            let location = await Location.getCurrentPositionAsync({accuracy: Location.Accuracy.Lowest});
+            setUserLocation(location);
+            //if no location is set, set the current location to the user's location
+            if (!currentLocation) setCurrentLocation(location);
         })();
     }, []);
-
+    
+    // useEffect(() => {
+    //     console.log("observations", observations.data)
+    // }, [observations.data])
+    
     return (
         <View style={styles.container}>
-            {location ? (
-                <MapView 
+            <MapView 
                 ref={mapRef}
                 provider={PROVIDER_GOOGLE}
                 style={styles.map}
-                initialRegion={{
-                    latitude: location.coords.latitude,
-                    longitude: location.coords.longitude,
-                    ...defaultZoomDistance
-                }}>
+            > 
+                {observations.data.map(observation => (
                     <Marker
+                        key={observation.id}
                         coordinate={{
-                            latitude: 51.371989,
-                            longitude: -2.341385,
+                            latitude: observation.location.latitude,
+                            longitude: observation.location.longitude,
                         }}
-                        title="Bath"
-                        description="some location in Bath, UK"
+                        title={observation.animalName}
+                        description={observation.description}
                     />
-                </MapView>
-            ): <Text>{errorMsg}</Text>}
-            <TouchableOpacity onPress={goToMyLocation} style={styles.currentLocationButton}>
+                ))
+            }
+            </MapView>
+            <TouchableOpacity 
+                onPress={() => goToLocation(userLocation)} 
+                style={{...styles.currentLocationButton, opacity: userLocation ? 1 : 0.2}}
+            >
                 <FontAwesome6 name="location-crosshairs" size={25} style={{color: "white"}}/>
             </TouchableOpacity>
         </View>

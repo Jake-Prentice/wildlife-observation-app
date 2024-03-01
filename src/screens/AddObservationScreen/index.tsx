@@ -7,22 +7,23 @@ import useCamera, { UseCamera } from '@/hooks/useCamera';
 import styles from './style';
 import ImageOrPlaceholder from '@/components/ImageOrPlaceholder';
 import {ButtonSpinner} from "@gluestack-ui/themed"
-import { addObservation, useObservations } from '@/contexts/ObservationContext';
+import { useObservations } from '@/contexts/ObservationContext';
 
+//TODO - still don't get how these types work!!!!
 export type AddScreenRouteProp = RouteProp<ObservationStackParamList, 'AddObservation'>;
 export type AddScreenNavigationProp = BottomTabNavigationProp<ObservationStackParamList,'AddObservation'>;
 
 type Props = {
     route: AddScreenRouteProp;
+    navigation: any;
 };
 
-const AddObservationScreen = ({ route }: Props) => {
+const AddObservationScreen = ({ route, navigation }: Props) => {
 
     const observations = useObservations();
 
     const [animalName, setAnimalName] = useState('');
     const [description, setDescription] = useState('');
-    const [isUploading, setIsUploading] = useState(false);   
 
     //technically this is scuffed since you're making another useCamera, does it matter? Idk, sort out later
     const image1 = useCamera(route.params?.image);
@@ -33,11 +34,15 @@ const AddObservationScreen = ({ route }: Props) => {
   
     const handleSubmitPress = async () => {
         if (!image1.current && !image2.current && !image3.current) return; //TODO - error handling
-        try{
-          await addObservation({animalName, description, images: [image1, image2, image3]}); 
-        }catch(err){
-            console.log(err);
-        }
+        await observations.add({animalName, description, images: [image1, image2, image3]}); 
+        const observation = observations.data[observations.data.length - 1];
+        //navigate to map screen, it should focus to the new observation
+        navigation.navigate('Main', {screen: 'Map', params: {initialLocation: {
+            coords: {
+              latitude: observation.location.latitude,
+              longitude: observation.location.longitude
+            }
+        }}});
     };
   
     return (
@@ -70,7 +75,7 @@ const AddObservationScreen = ({ route }: Props) => {
           />
         </View>
         <TouchableOpacity onPress={handleSubmitPress} style={styles.submitButton}>
-            {isUploading && <ButtonSpinner mr="$1" />}
+            {observations.isUploading && <ButtonSpinner mr="$1" />}
           <Text style={styles.submitButtonText}>Submit</Text>
         </TouchableOpacity>
       </ScrollView>

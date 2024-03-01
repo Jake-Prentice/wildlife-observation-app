@@ -13,7 +13,7 @@ import AuthStackNavigator from './navigation/AuthStackNavigtor';
 import UnAuthStackNavigator from './navigation/UnAuthStackNavigator';
 
 const Routes = () => {
-  const user = useUser(); // Adjust based on how your user context is set up
+  const user = useUser(); 
   if (user.info) return <AuthStackNavigator />;
   return <UnAuthStackNavigator />;
 };

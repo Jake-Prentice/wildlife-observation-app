@@ -6,7 +6,10 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import BottomNavigtor from "@/components/BottomNavigator";
 
 export type BottomTabParamList  = {
-    Map: undefined; 
+    Map: {initialRegion: {
+        latitude: number;
+        longitude: number;    
+    }} | undefined; 
     Rewards: undefined; 
     Notifica: undefined; 
     Profile: undefined;

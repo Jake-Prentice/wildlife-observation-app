@@ -1,10 +1,8 @@
 import BottomTabNavigator from 'src/navigation/BottomTabNavigator';
 import ObservationStackNavigator from 'src/navigation/ObservationStackNavigator';
 import { ObservationProvider } from 'src/contexts/ObservationContext';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { NativeStackScreenProps, createNativeStackNavigator } from '@react-navigation/native-stack';
 import { getFocusedRouteNameFromRoute} from '@react-navigation/native';
-
-const RootStack = createNativeStackNavigator();
 
 //this is so fucking scuffed, but I can't find any other solution
 function getMainHeaderTitle(route:any) {
@@ -33,6 +31,9 @@ export type AuthStackParamList = {
     Main: undefined;
     Observation: undefined;
 };
+
+export type MainStackProps = NativeStackScreenProps<AuthStackParamList, 'Main'>;
+export type ObservationStackProps = NativeStackScreenProps<AuthStackParamList, 'Observation'>;
 
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();
 
