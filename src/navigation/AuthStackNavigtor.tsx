@@ -1,25 +1,57 @@
+import BottomTabNavigator from 'src/navigation/BottomTabNavigator';
+import ObservationStackNavigator from 'src/navigation/ObservationStackNavigator';
+import { ObservationProvider } from 'src/contexts/ObservationContext';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import {LoginScreen, RegisterScreen} from 'src/screens/auth';
+import { getFocusedRouteNameFromRoute} from '@react-navigation/native';
 
-/* 
+const RootStack = createNativeStackNavigator();
 
-This isn't getting used at the moment
+//this is so fucking scuffed, but I can't find any other solution
+function getMainHeaderTitle(route:any) {
+  const routeName = getFocusedRouteNameFromRoute(route) ?? 'Map';
+  switch (routeName) {
+    case 'Map':
+      return 'Map';
+    case 'Profile':
+      return 'My profile';
+    case 'Notifica':
+      return 'Notifications';
+    case 'Rewards':
+      return 'Rewards';
+  }
+}
 
-*/
+const getObservationHeaderTitle = (route: any) => {
+    const routeName = getFocusedRouteNameFromRoute(route) ?? 'Add Observation';
+    switch (routeName) {
+        case 'AddObservation':
+            return 'Add observation';
+    }
+}
 
 export type AuthStackParamList = {
-    Register: undefined;
-    Login: undefined;
+    Main: undefined;
+    Observation: undefined;
 };
 
-const Stack = createNativeStackNavigator<AuthStackParamList>();
+const AuthStack = createNativeStackNavigator<AuthStackParamList>();
 
 const AuthStackNavigator = () => {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Login" component={LoginScreen} />
-      <Stack.Screen name="Register" component={RegisterScreen} />
-    </Stack.Navigator>
+    <ObservationProvider>
+      <AuthStack.Navigator>
+        <AuthStack.Screen 
+                name="Main" 
+                component={BottomTabNavigator} 
+                options={({ route }) => ({headerTitle: getMainHeaderTitle(route)})}
+            />
+            <AuthStack.Screen 
+                name="Observation" 
+                component={ObservationStackNavigator} 
+                options={({ route }) => ({headerTitle: getObservationHeaderTitle(route)})}
+            />
+      </AuthStack.Navigator>
+    </ObservationProvider>
   );
 };
 

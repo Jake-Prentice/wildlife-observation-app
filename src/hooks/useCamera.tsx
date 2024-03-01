@@ -54,11 +54,11 @@ const useCamera = (initial?: ImagePicker.ImagePickerResult): UseCamera  => {
             quality: 0.5,
         });
 
-
         if (!result.canceled) {
-            console.log("starting")
+            //this function takes so long since it's getting a very accurate location,
+            //this is why it would be so much better to get it natively from the exif data,
+            //then it would be instant. It's taking sometimes > 5 seconds to get the location
             let location = await Location.getCurrentPositionAsync({});
-            console.log("finished")
             result.assets[0].exif = {
                 ...result.assets[0].exif,
                 GPSLatitude: location.coords.latitude,

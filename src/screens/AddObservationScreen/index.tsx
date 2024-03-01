@@ -18,7 +18,7 @@ type Props = {
 
 const AddObservationScreen = ({ route }: Props) => {
 
-    // const observations = useObservations();
+    const observations = useObservations();
 
     const [animalName, setAnimalName] = useState('');
     const [description, setDescription] = useState('');

@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import * as Location from 'expo-location';
 import {FontAwesome6} from '@expo/vector-icons';
+import { useObservations } from '@/contexts/ObservationContext';
 
 //the latitudeDelta and longitudeDelta determine the zoom level of the map
 const defaultZoomDistance = { 
@@ -10,6 +11,9 @@ const defaultZoomDistance = {
     longitudeDelta: 0.0421,
 }
 const MapScreen = () => {
+
+    const observations = useObservations();
+
     const [location, setLocation] = useState<Location.LocationObject | null>(null);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
     const mapRef = useRef<MapView>(null);
@@ -24,6 +28,10 @@ const MapScreen = () => {
             }, 500); // 500 ms duration
         }
     };
+
+    useEffect(() => {
+        console.log(observations.data)
+    }, [observations.data])
 
     //get user location permission
     useEffect(() => {

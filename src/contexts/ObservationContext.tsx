@@ -2,6 +2,8 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import {} from "firebase/app"
 import { UseCamera } from '@/hooks/useCamera';
 import * as services from '@/services/observations';
+import { DocumentData, collection, onSnapshot, query } from 'firebase/firestore';
+import { db } from 'src/FirebaseConfig'; 
 
 //distance between longitude and latitude of two points (in km)
 const haversineDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => { 
@@ -94,21 +96,34 @@ export const addObservation = async (
 }
 
 export interface IObservationsValue {
-
+    data: services.ObservationSchema[];
 }
 
 const ObservationContext = createContext<Partial<IObservationsValue>>({});
 
 export const ObservationProvider = ({ children }: { children: React.ReactNode }) => {
     const [observations, setObservations] = useState<services.ObservationSchema[]>([]);
-
+    
     useEffect(() => {
-
+        // Define the collection you want to listen to
+        const collectionRef = collection(db, 'observations');
+        // Optionally, you can apply query constraints here
+        const q = query(collectionRef);
+    
+        // Subscribe to the collection
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+          const updatedObservations = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...(doc.data() as DocumentData) as services.ObservationSchema,
+          }));
+          // Update state with the new observations
+          setObservations(updatedObservations);
+        });
+        return () => unsubscribe();
     }, []);
 
-
     const value = {
-
+        data: observations,
     };
 
     return <ObservationContext.Provider value={value}>{children}</ObservationContext.Provider>;
