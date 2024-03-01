@@ -12,6 +12,7 @@ import { UserProvider, useUser } from './contexts/UserContext';
 //navigation
 import BottomTabNavigator from './navigation/BottomTabNavigator';
 import ObservationStackNavigator from './navigation/ObservationStackNavigator';
+import { ObservationProvider } from './contexts/ObservationContext';
 
 const RootStack = createNativeStackNavigator();
 
@@ -67,10 +68,12 @@ export default function App() {
   return (
     <GluestackUIProvider config={config}>
       <UserProvider>
-        <NavigationContainer>
-          <Routes />
-          <StatusBar style="auto" />
-        </NavigationContainer>
+        <ObservationProvider>
+          <NavigationContainer>
+            <Routes />
+            <StatusBar style="auto" />
+          </NavigationContainer>
+        </ObservationProvider>
       </UserProvider>
     </GluestackUIProvider>
   );

@@ -40,7 +40,7 @@ const BottomNavigtor = (
         if (camera.current) {
             navigation.navigate('Observation', {
                 screen: "AddObservation", 
-                params: {image: camera}
+                params: {image: camera.result}
             })
         }
     }, [camera.result])

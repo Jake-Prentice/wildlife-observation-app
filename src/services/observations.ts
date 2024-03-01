@@ -1,119 +1,110 @@
 import {collection, addDoc, getDocs, doc, getDoc} from "firebase/firestore";
 import {db, storage} from "src/FirebaseConfig";
-import {ref, uploadBytesResumable, getDownloadURL} from "firebase/storage";
+import {ref, uploadBytesResumable, getDownloadURL, uploadBytes, UploadMetadata} from "firebase/storage";
+import { ImageToUpload, ObservationToUpload } from "@/contexts/ObservationContext";
 
-type Observation = {
+export type ObservationSchema = {
     animalName: string;
     description: string;
     location: {
         latitude: number;
         longitude: number;
+        radius: number;
     }
     timestamp: string;
     images: string[]
 }
 
+const getImageBlob = async (image: string): Promise<Blob> => {
+  try {
+    const response = await fetch(image);
+    if (!response.ok) {
+      throw new Error(`Network response was not ok for URL: ${image}`);
+    }
+    return await response.blob();
+  } catch (error) {
+    console.error('Error fetching image blob:', error);
+    throw error; 
+  }
+};
+
+const uploadImage = async (image: ImageToUpload): Promise<string> => {
+  try {
+    const blob = await getImageBlob(image.uri);
+    const storageRef = ref(storage, `/images/${Date.now()}`);
+
+    const metadata = {
+      contentType: "image/jpeg",
+      customMetadata: { ...image.metadata },
+    };
+
+    // Start a resumable upload
+    const uploadTask = uploadBytesResumable(storageRef, blob, metadata);
+
+    // Wait for the upload to complete
+    return await new Promise((resolve, reject) => {
+      uploadTask.on(
+        'state_changed',
+        (snapshot) => {
+          // Optional: Monitor upload progress, handle pause/resume, etc.
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log('Upload is ' + progress + '% done');
+          switch (snapshot.state) {
+            case 'paused':
+              console.log('Upload is paused');
+              break;
+            case 'running':
+              console.log('Upload is running');
+              break;
+          }
+        },
+        (error) => {
+          // Handle unsuccessful uploads
+          console.error('Error during upload:', error);
+          reject(error);
+        },
+        async () => {
+          // Handle successful uploads on complete
+          try {
+            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+            resolve(downloadURL);
+          } catch (error) {
+            console.error('Error getting download URL:', error);
+            reject(error);
+          }
+        }
+      );
+    });
+  } catch (error) {
+    console.error('Error preparing image for upload:', error);
+    throw error; 
+  }
+};
+
+const uploadImages = async (images: ImageToUpload[]): Promise<string[]> => {
+  try {
+    const imagePromises = images.map(uploadImage);
+    return await Promise.all(imagePromises);
+  } catch (error) {
+    console.error('Error uploading multiple images:', error);
+    throw error; 
+  }
+};
 
 export const getObservations = async () => {
   const snapshot = await getDocs(collection(db, "observations"));
   return snapshot.docs.map((doc: any) => doc.data());
 };
 
-export const addObservation = async (observation: Observation) => {
-//     const imagePromises = Array.from(images, (image) => uploadImage(image));
-
-//   const imageRes = await Promise.all(imagePromises);
-  
-    await addDoc(collection(db, "observations"), observation);
-
+export const addObservation = async (observation: ObservationToUpload): Promise<ObservationSchema> => {
+    try {
+      const imageURLs = await uploadImages(observation.images);
+      console.log("adding observation...")
+      const res = {...observation, images: imageURLs} as ObservationSchema;
+      await addDoc(collection(db, "observations"), res);
+      return res;
+    } catch (error) {
+      console.error('Error adding observation:', error);
+      throw error; 
+    }
 };
-
-//upload image to firebase cloud storage
-export const manageFileUpload = async (
-    fileBlob: any,
-    { onStart, onProgress, onComplete, onFail }: {onStart: any, onProgress: any, onComplete: any, onFail: any}
-  ) => {
-    const imgName = "img-" + new Date().getTime();
-    const storageRef = ref(storage, `images/${imgName}.jpg`);
-  
-    console.log("uploading file", imgName);
-  
-    // Create file metadata including the content type
-    const metadata = {
-      contentType: "image/jpeg",
-      customMetadata: {
-        "uploadedBy": "Allda"
-      }
-    };
-  
-    // Trigger file upload start event
-    onStart && onStart();
-    const uploadTask = uploadBytesResumable(storageRef, fileBlob, metadata);
-    // Listen for state changes, errors, and completion of the upload.
-    uploadTask.on(
-      "state_changed",
-      (snapshot: any) => {
-        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        // Monitor uploading progress
-        onProgress && onProgress(Math.fround(progress).toFixed(2));
-      },
-      (error: any) => {
-        // Something went wrong - dispatch onFail event with error  response
-        onFail && onFail(error);
-      },
-      () => {
-            // Upload completed successfully, now we can get the download URL
-            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-                onComplete && onComplete(downloadURL);
-                console.log('File available at', downloadURL);
-            });
-      }
-    );
-};
-  
-
-/*
-There are several ways to write data to Cloud Firestore:
-
-*Set the data of a document within a collection, explicitly specifying a document identifier.
-*Add a new document to a collection. In this case, Cloud Firestore automatically generates the document identifier.
-*Create an empty document with an automatically generated identifier, and assign data to it later.
-
-*/
-
-// export const testAdd = async () => {
-//     try{ 
-//         const docRef = await addDoc(collection(db, "users"), {
-//             first: "Allda",
-//             last: "Lovelace",
-//             born: 1815
-//         });
-//         console.log("Document written with ID: ", docRef.id);
-//     }catch(e){
-//         console.error("Error adding document: ", e);
-//     }
-// } 
-
-
-// export const testGet = async () => {
-//     try{ 
-//         // const ref = doc(db, "users", "7yvS1Faxx9qSzTUYcqJq");
-//         const ref = doc(db, "users", "7yvS1Faxx9qSzTUYcqJq");
-//         const docSnap = await getDoc(ref);
-
-//         if (docSnap.exists()) {
-//             console.log("Document data:", docSnap.data());
-//         }
-//         else{
-//             console.log("No such document!");
-//         }
-//         // const snapshot = await getDocs(collection(db, "users"));
-//         // snapshot.forEach((doc) => {
-//         //     console.log(doc.id, " => ", doc.data());
-//         // });
-
-//     }catch(e){
-//         console.error("Error getting documents: ", e);
-//     }
-// }

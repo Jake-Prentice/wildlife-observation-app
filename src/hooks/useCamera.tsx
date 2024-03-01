@@ -13,6 +13,12 @@ const requestPermissions = async () => {
         alert('Sorry, we need camera roll permissions to make this work!');
     }
 };
+
+const parseDate = (date: string) => {
+    const b = date.split(/\D/) as unknown as number[];
+    return new Date(b[0],b[1]-1,b[2],b[3],b[4],b[5]);
+}
+
 export type UseCamera = {
     current: ImagePicker.ImagePickerAsset | undefined;
     result: ImagePicker.ImagePickerResult | undefined;
@@ -50,11 +56,14 @@ const useCamera = (initial?: ImagePicker.ImagePickerResult): UseCamera  => {
 
 
         if (!result.canceled) {
+            console.log("starting")
             let location = await Location.getCurrentPositionAsync({});
+            console.log("finished")
             result.assets[0].exif = {
                 ...result.assets[0].exif,
                 GPSLatitude: location.coords.latitude,
                 GPSLongitude: location.coords.longitude,
+                timestamp: location.timestamp
             }
         }
         setResult(result);
@@ -68,6 +77,12 @@ const useCamera = (initial?: ImagePicker.ImagePickerResult): UseCamera  => {
             aspect: [4, 3],
             quality: 1,
         });
+
+        if (!result.canceled) {
+            const isoTime = parseDate(result.assets[0].exif!.DateTimeOriginal);
+            result.assets[0].exif!.timestamp = new Date(isoTime).toString();
+        }
+
         setResult(result);
     };
 
