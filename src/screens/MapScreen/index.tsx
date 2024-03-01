@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import MapView, {LatLng, Marker, PROVIDER_GOOGLE} from 'react-native-maps';
+import { View, Text, StyleSheet, TouchableOpacity, Button } from 'react-native';
+import MapView, {Callout, LatLng, Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import * as Location from 'expo-location';
 import {FontAwesome6} from '@expo/vector-icons';
 import { useObservations } from '@/contexts/ObservationContext';
 import { RouteProp } from '@react-navigation/native';
 import { ObservationStackParamList } from '@/navigation/ObservationStackNavigator';
 import { BottomTabParamList } from '@/navigation/BottomTabNavigator';
-
+import { AntDesign } from '@expo/vector-icons';
 //the latitudeDelta and longitudeDelta determine the zoom level of the map
 const defaultZoomDistance = { 
     latitudeDelta: 0.0922,
@@ -17,9 +17,10 @@ const defaultZoomDistance = {
 //sort the types out JAKE!
 type Props = { 
     route: any;
+    navigation: any;
 }
 
-const MapScreen = ({route}: Props) => {
+const MapScreen = ({route, navigation}: Props) => {
 
     const observations = useObservations();
 
@@ -86,7 +87,18 @@ const MapScreen = ({route}: Props) => {
                         }}
                         title={observation.animalName}
                         description={observation.description}
-                    />
+                    >
+                        <Callout
+                            style={styles.calloutContainer} // You can adjust the style as needed
+                            >
+                                <View style={styles.calloutTitle}>
+                                    <Text>{observation.animalName}</Text>
+                                </View>
+                                <TouchableOpacity style={styles.calloutArrow}>
+                                    <AntDesign name="rightcircle" size={24} color="black" />
+                                </TouchableOpacity>
+                        </Callout>
+                    </Marker>
                 ))
             }
             </MapView>
@@ -120,7 +132,32 @@ const styles = StyleSheet.create({
         //TODO - should probably make the 90 a constant somewhere and import it in
         bottom: 90 + 60, // 90 is the height of the bottom navigator, 60 is the height of the current location icon 
         right: 40
-    }
+    },
+    calloutContainer: {
+
+        backgroundColor: 'white',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexDirection: 'row',
+      },
+      calloutTitle: {
+        paddingTop: 10,
+        paddingBottom: 10,
+        borderWidth: 2,
+        borderColor: "black",
+        flex:1,
+        fontSize: 16,
+        fontWeight: 'bold',
+        padding: 10
+      },
+      calloutArrow: {
+        borderWidth: 2,
+        borderColor: "black",
+        padding: 10,
+        flex:0.2,
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
 });
 
 export default MapScreen;
