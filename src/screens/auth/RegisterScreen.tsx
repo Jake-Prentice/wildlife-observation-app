@@ -74,6 +74,9 @@ const RegisterScreen = ({navigation}: Props) => {
           case 'auth/missing-password':
             setError("Please enter a password");
             break;
+            case 'auth/missing-email':
+              setError("Please enter an email address");
+              break;
           default:
             setError("An unexpected error occurred with firebase. Error code: " + error.code);
           }
