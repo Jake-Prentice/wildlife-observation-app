@@ -3,6 +3,11 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 const UnauthStack = createNativeStackNavigator();
 
+export type UnAuthStackParamList = {
+  Login: undefined;
+  Register: undefined;
+};
+
 const UnAuthStackNavigator = () => {
   return (
     <UnauthStack.Navigator>

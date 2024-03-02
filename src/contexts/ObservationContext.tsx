@@ -4,6 +4,8 @@ import { UseCamera } from '@/hooks/useCamera';
 import * as services from '@/services/observations';
 import { DocumentData, collection, onSnapshot, query } from 'firebase/firestore';
 import { db } from 'src/FirebaseConfig'; 
+import { AnimalName, ObservationSchema } from '@/services/schemas';
+import { useUser } from './UserContext';
 
 //distance between longitude and latitude of two points (in km)
 const haversineDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => { 
@@ -60,21 +62,25 @@ export type ImageToUpload = {
 }
 
 export type ObservationToUpload = {
-    animalName: string;
-    description: string;
+    user: {
+        refId: string;
+        name: string;
+    }
+    animalName: AnimalName[];
     location: {
         latitude: number;
         longitude: number;
         radius: number;
     }
     timestamp: string;
+    description: string;
     images: ImageToUpload[]
 }
 
 
 export interface IObservationsValue {
     //the id gets added in the onSnapshot
-    data: (services.ObservationSchema & {id: string})[];
+    data: (ObservationSchema & {id: string})[];
     add: (observation: {animalName: string, description: string, images: UseCamera[]}) => Promise<void>;
     isUploading: boolean;
 }
@@ -82,15 +88,36 @@ export interface IObservationsValue {
 const ObservationContext = createContext<Partial<IObservationsValue>>({});
 
 export const ObservationProvider = ({ children }: { children: React.ReactNode }) => {
-    const [observations, setObservations] = useState<(services.ObservationSchema & {id: string})[]>([]);
+    const [observations, setObservations] = useState<(ObservationSchema & {id: string})[]>([]);
     const [isUploading, setIsUploading] = useState(false);
+
+    const user = useUser();
 
     const add = async (
         {animalName, description, images}: 
         {animalName: string, description: string, images: UseCamera[]}
     ) => {
         setIsUploading(true);
-        const observation: ObservationToUpload = {animalName, description} as ObservationToUpload
+        
+        const formatUser = {
+            refId: user.info?.uid,
+            name: user?.info?.displayName
+        }
+
+        const animalId = await services.processAnimalName(animalName);
+
+        const formatAnimalName = {
+            refId: animalId, 
+            name: animalName, 
+            upvotes: 0
+        } as AnimalName;
+
+        const observation = {
+            user: formatUser,
+            animalName: [formatAnimalName], 
+            description
+        } as ObservationToUpload;
+        
         //the images the user didn't leave blank 
         const filteredImages = images.filter(image => image.result !== undefined);
         //get the data in the right format to upload...
@@ -122,7 +149,7 @@ export const ObservationProvider = ({ children }: { children: React.ReactNode })
         const unsubscribe = onSnapshot(q, (snapshot) => {
           const updatedObservations = snapshot.docs.map(doc => ({
             id: doc.id,
-            ...(doc.data() as DocumentData) as services.ObservationSchema,
+            ...(doc.data() as DocumentData) as ObservationSchema,
           }));
           // Update state with the new observations
           setObservations(updatedObservations);

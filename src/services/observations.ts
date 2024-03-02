@@ -1,19 +1,8 @@
-import {collection, addDoc, getDocs, doc, getDoc} from "firebase/firestore";
+import {collection, addDoc, getDocs, doc, getDoc, setDoc, where, query, updateDoc, arrayUnion} from "firebase/firestore";
 import {db, storage} from "src/FirebaseConfig";
 import {ref, uploadBytesResumable, getDownloadURL, uploadBytes, UploadMetadata} from "firebase/storage";
 import { ImageToUpload, ObservationToUpload } from "@/contexts/ObservationContext";
-
-export type ObservationSchema = {
-    animalName: string;
-    description: string;
-    location: {
-        latitude: number;
-        longitude: number;
-        radius: number;
-    }
-    timestamp: string;
-    images: string[]
-}
+import { ObservationSchema } from "./schemas";
 
 const getImageBlob = async (image: string): Promise<Blob> => {
   try {
@@ -107,4 +96,62 @@ export const addObservation = async (observation: ObservationToUpload): Promise<
       console.error('Error adding observation:', error);
       throw error; 
     }
+};
+
+//simply adds animal to 'animals' collection
+export const addAnimal = async (name: string) => {
+    const animalRef = doc(collection(db, 'animals'));
+    await setDoc(animalRef, {
+      name: name,
+      hasScienceInfo: false 
+    });
+    console.log(`Animal ${name} added with ID ${animalRef.id}`);
+    return animalRef.id; // Return the newly created animal document ID
+};
+
+//returns the animal id if it exists
+export const getAnimal = async (name: string) => {
+    const animalsRef = collection(db, 'animals');
+    const q = query(animalsRef, where('name', '==', name));
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+      const animalDoc = querySnapshot.docs[0];
+      return animalDoc.id; // Return the animal document ID
+    }
+
+    return null; // Animal not found
+};
+
+//with side effects: if animal doesn't exist in animals collection, add it. 
+//returns the animal id
+export const processAnimalName = async (name: string) => {
+    let animalId = await getAnimal(name);
+
+    if (!animalId) {
+      // Animal doesn't exist, so add it
+      animalId = await addAnimal(name);
+    }
+
+    return animalId; // Return the existing or new animal document ID
+};
+
+//adds an animal name to an observation
+export const addAnimalName = async (observationId: string, name: string) => {
+    // Ensure the animal exists in the 'animals' collection, and get its ID
+    const animalId = await processAnimalName(name);
+
+    const observationRef = doc(db, 'observations', observationId);
+    const animalName = {
+        refId: animalId,
+        name: name,
+        upvotes: 0 
+    };
+
+    // Add the AnimalName to the observation's 'animalName' array
+    await updateDoc(observationRef, {
+      animalName: arrayUnion(animalName)
+    });
+
+    console.log(`AnimalName ${name} added to observation ${observationId}`);
 };

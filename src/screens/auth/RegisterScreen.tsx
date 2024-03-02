@@ -1,16 +1,17 @@
 // RegisterScreen.tsx
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { FIREBASE_AUTH } from '../../FirebaseConfig'; // Adjust the import path as necessary
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { FIREBASE_AUTH, db } from '../../FirebaseConfig'; // Adjust the import path as necessary
 import { FirebaseError } from 'firebase/app';
 import styles from "./style"
 import { RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { AuthStackParamList } from '@/navigation/AuthStackNavigtor';
+import { UnAuthStackParamList } from '@/navigation/UnAuthStackNavigator';
+import { doc, setDoc } from 'firebase/firestore';
 
-export type RegisterScreenRouteProp = RouteProp<AuthStackParamList, 'Register'>;
-export type RegisterScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList,'Register'>;
+export type RegisterScreenRouteProp = RouteProp<UnAuthStackParamList, 'Register'>;
+export type RegisterScreenNavigationProp = NativeStackNavigationProp<UnAuthStackParamList,'Register'>;
 
 type Props = {
   navigation: RegisterScreenNavigationProp;
@@ -19,15 +20,32 @@ type Props = {
 const RegisterScreen = ({navigation}: Props) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('');
+
   const [error, setError] = useState('');
 
   const handleRegister = async () => {
     try {
       const userCredentials = await createUserWithEmailAndPassword(FIREBASE_AUTH, email, password);
-      console.log(userCredentials)
-      // Registration successful
-      setError(''); // Clear any previous error
-      // Navigate to the main app screen here if needed
+      // Check if user was created successfully and user object exists
+      if (userCredentials.user) {
+        // Update the user's profile with the username as the display name
+        await updateProfile(userCredentials.user, {
+          displayName: username,
+        });
+
+        // Create a user-stats document for the user
+        //TODO - maybe make this into a separate function
+        const userStatRef = doc(db, 'user-stats', userCredentials.user.uid);
+        await setDoc(userStatRef, {
+          uid: userCredentials.user.uid,
+          numObservations: 0,
+          contributions: 0,
+        });
+
+        console.log('User registered with display name:', username);
+        setError(''); // Clear any previous error
+      }
     } catch (error) {
       if (error instanceof FirebaseError) {
         setError(error.message);
@@ -50,6 +68,13 @@ const RegisterScreen = ({navigation}: Props) => {
       />
       <TextInput
         style={styles.input}
+        placeholder="Username"
+        value={username}
+        onChangeText={setUsername}
+        autoCapitalize="none"
+      />
+      <TextInput
+        style={styles.input}
         placeholder="Password"
         value={password}
         onChangeText={setPassword}
@@ -60,7 +85,7 @@ const RegisterScreen = ({navigation}: Props) => {
         <Text style={styles.buttonText}>Register</Text>
       </TouchableOpacity>
       <TouchableOpacity
-        onPress={() => navigation.navigate('Login')} // Use your navigation method here
+        onPress={() => navigation.navigate('Login')}
         style={styles.registerButton}
       >
         <Text style={styles.registerButtonText}>Already have an account? Login</Text>

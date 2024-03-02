@@ -1,10 +1,12 @@
 import { UseCamera } from '@/hooks/useCamera';
-import AddObservationScreen from '@/screens/AddObservationScreen';
+import {AddScreen, ViewScreen} from "src/screens/observations";
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ImagePickerAsset, ImagePickerResult } from 'expo-image-picker';
+import { ObservationSchema } from '@/services/schemas';
 
 export type ObservationStackParamList  = {
     AddObservation: {image: ImagePickerResult};
+    ViewObservation: {observation: ObservationSchema & {id: string}};
 }
 
 const ObservationStack = createNativeStackNavigator<ObservationStackParamList>();
@@ -15,7 +17,11 @@ const ObservationStackNavigator = () => {
         <ObservationStack.Navigator screenOptions={{headerShown:false}} >
             <ObservationStack.Screen 
                 name="AddObservation" 
-                component={AddObservationScreen} 
+                component={AddScreen} 
+            />
+            <ObservationStack.Screen 
+                name="ViewObservation" 
+                component={ViewScreen} 
             />
         </ObservationStack.Navigator>
     );

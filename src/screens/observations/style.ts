@@ -64,6 +64,9 @@ const styles = StyleSheet.create({
       fontSize: 18,
       color: '#FFF',
     },
+    textContent: {
+      
+    }
   });
   
   export default styles;

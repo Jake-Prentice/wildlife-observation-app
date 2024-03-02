@@ -8,6 +8,8 @@ import { RouteProp } from '@react-navigation/native';
 import { ObservationStackParamList } from '@/navigation/ObservationStackNavigator';
 import { BottomTabParamList } from '@/navigation/BottomTabNavigator';
 import { AntDesign } from '@expo/vector-icons';
+import { ObservationSchema } from '@/services/schemas';
+
 //the latitudeDelta and longitudeDelta determine the zoom level of the map
 const defaultZoomDistance = { 
     latitudeDelta: 0.0922,
@@ -24,7 +26,7 @@ const MapScreen = ({route, navigation}: Props) => {
 
     const observations = useObservations();
 
-    const [currentLocation, setCurrentLocation] = useState<Location.LocationObject | undefined>(route.params?.initialLocation);
+    const [currentLocation, setCurrentLocation] = useState<Location.LocationObject | undefined>(undefined);
 
     const [userLocation, setUserLocation] = useState<Location.LocationObject | undefined>(undefined);
 
@@ -62,15 +64,18 @@ const MapScreen = ({route, navigation}: Props) => {
             }
             let location = await Location.getCurrentPositionAsync({accuracy: Location.Accuracy.Lowest});
             setUserLocation(location);
-            //if no location is set, set the current location to the user's location
-            if (!currentLocation) setCurrentLocation(location);
+            //if no location is set, set the current location to the user's location,
+            //if coming from the add observation screen, it will focus on that newest observation
+            if (route.params?.initialLocation) setCurrentLocation(route.params.initialLocation);
+            else setCurrentLocation(location);
         })();
     }, []);
     
-    // useEffect(() => {
-    //     console.log("observations", observations.data)
-    // }, [observations.data])
-    
+    const onCalloutPress = (observation: ObservationSchema & {id: string}) => {
+        navigation.navigate("Observation", {screen: "ViewObservation", params: {observation}})
+    }
+
+    //TODO - radius circle around marker when clicked...
     return (
         <View style={styles.container}>
             <MapView 
@@ -85,17 +90,16 @@ const MapScreen = ({route, navigation}: Props) => {
                             latitude: observation.location.latitude,
                             longitude: observation.location.longitude,
                         }}
-                        title={observation.animalName}
-                        description={observation.description}
                     >
                         <Callout
+                            onPress={() => onCalloutPress(observation)} 
                             style={styles.calloutContainer} // You can adjust the style as needed
                             >
                                 <View style={styles.calloutTitle}>
-                                    <Text>{observation.animalName}</Text>
+                                    <Text>{observation.animalName[0].name}</Text>
                                 </View>
                                 <TouchableOpacity style={styles.calloutArrow}>
-                                    <AntDesign name="rightcircle" size={24} color="black" />
+                                    <AntDesign name="rightcircle" size={20} color="#3d8afe" />
                                 </TouchableOpacity>
                         </Callout>
                     </Marker>
@@ -134,8 +138,7 @@ const styles = StyleSheet.create({
         right: 40
     },
     calloutContainer: {
-
-        backgroundColor: 'white',
+        flex:1,
         alignItems: 'center',
         justifyContent: 'space-between',
         flexDirection: 'row',
@@ -143,7 +146,7 @@ const styles = StyleSheet.create({
       calloutTitle: {
         paddingTop: 10,
         paddingBottom: 10,
-        borderWidth: 2,
+
         borderColor: "black",
         flex:1,
         fontSize: 16,
@@ -151,8 +154,8 @@ const styles = StyleSheet.create({
         padding: 10
       },
       calloutArrow: {
-        borderWidth: 2,
-        borderColor: "black",
+        paddingLeft: 10,
+
         padding: 10,
         flex:0.2,
         justifyContent: 'center',
