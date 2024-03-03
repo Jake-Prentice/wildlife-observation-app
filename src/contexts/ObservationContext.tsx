@@ -93,6 +93,7 @@ export const ObservationProvider = ({ children }: { children: React.ReactNode })
 
     const user = useUser();
 
+    //add a new observation to db
     const add = async (
         {animalName, description, images}: 
         {animalName: string, description: string, images: UseCamera[]}
@@ -140,23 +141,18 @@ export const ObservationProvider = ({ children }: { children: React.ReactNode })
     }
 
     useEffect(() => {
-        // Define the collection you want to listen to
         const collectionRef = collection(db, 'observations');
-        // Optionally, you can apply query constraints here
         const q = query(collectionRef);
     
-        // Subscribe to the collection
         const unsubscribe = onSnapshot(q, (snapshot) => {
           const updatedObservations = snapshot.docs.map(doc => ({
             id: doc.id,
             ...(doc.data() as DocumentData) as ObservationSchema,
           }));
-          // Update state with the new observations
           setObservations(updatedObservations);
         });
 
         return () => unsubscribe();
-
     }, []);
 
     const value = {

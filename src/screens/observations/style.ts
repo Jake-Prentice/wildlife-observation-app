@@ -9,7 +9,16 @@ const styles = StyleSheet.create({
         height: "100%",
         width: "100%",
         padding: 13,
+        backgroundColor: "white",
     },
+    infoContainer: {
+      // borderColor: '#000',
+      // borderWidth: 1,
+      padding: 10,
+      backgroundColor: "#f5f5f5", 
+      marginBottom: marginBottom,
+    },
+
     helpButton: {
       alignSelf: 'flex-end',
       padding: 10,
@@ -66,7 +75,38 @@ const styles = StyleSheet.create({
     },
     textContent: {
       
+    },
+
+    animalNameContainer: {
+      marginBottom: marginBottom,
+      backgroundColor: "#f5f5f5", 
+      padding: 15,
+    },
+
+    animalNameButton: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      // borderWidth: 1,
+      // borderColor: '#000',
+      padding: 10,
+      borderRadius: 5,
+      backgroundColor: "#ffffff",
+    },
+    animalNameText: {
+
+    },
+
+    animalNameIcon: {
+      paddingLeft: 10,
+
+      padding: 10,
+      flex:0.2,
+      justifyContent: 'center',
+      alignItems: 'center',
     }
+
+
   });
   
   export default styles;

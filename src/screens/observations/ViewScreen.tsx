@@ -1,9 +1,12 @@
-import React from 'react';
-import { View, Text, Image, ScrollView, StyleSheet } from 'react-native';
+import React, { useEffect, useMemo, useState } from 'react';
+import { View, Text, Image, ScrollView, StyleSheet, Button, TouchableOpacity } from 'react-native';
 import { RouteProp } from '@react-navigation/native';
 import { ObservationStackParamList } from '@/navigation/ObservationStackNavigator';
 import ImageModal from '@/components/ImageModal';
 import styles from './style';
+import AnimalNameModal from '@/components/AnimalNameModal';
+import { AntDesign } from '@expo/vector-icons';
+import { useObservations } from '@/contexts/ObservationContext';
 
 // Define the types for the navigation and route props
 export type ViewScreenRouteProp = RouteProp<ObservationStackParamList, 'ViewObservation'>;
@@ -13,19 +16,41 @@ type Props = {
 };
 
 const ViewObservationScreen = ({ route }: Props) => {
-  const {
-    user, 
-    animalName, 
-    images, 
-    description
-  } = route.params.observation;
+
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const {id} = route.params.observation;
+
+  const observations = useObservations();
+
+  const currentObservation = useMemo(() => {
+    return observations.data.find(obs => obs.id === id);
+  }, [observations, id]);
+
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.label}>User: {user.name} </Text>
-      <Text style={styles.label}>Name: {animalName[0].name}</Text>
+      <View style={styles.infoContainer}>
+        <Text style={styles.label}>User: @{currentObservation?.user.name} </Text>
+      </View>
+      <View style={styles.animalNameContainer}>
+          <View style={styles.animalNameButton}>
+              <View style={styles.animalNameText}>
+                  <Text>Animal Name: {currentObservation?.animalName[0].name}</Text>
+              </View>
+              <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.animalNameIcon}>
+                  <AntDesign name="rightcircle" size={20} color="#3d8afe" />
+              </TouchableOpacity>
+          </View>
+          <AnimalNameModal 
+              isVisible={modalVisible} 
+              setIsVisible={setModalVisible} 
+              animalNames={currentObservation?.animalName}
+              observationId={id}
+          />
+      </View>
       <View style={styles.imagePickerContainer}>
-        {images.map((imgUri, index) => (
+        {currentObservation?.images.map((imgUri, index) => (
           <ImageModal 
             key={index} 
             source={imgUri} 
@@ -34,7 +59,7 @@ const ViewObservationScreen = ({ route }: Props) => {
         ))}
       </View>
       <Text style={styles.label}>Description:</Text>
-      <Text style={styles.textContent}>{description}</Text>
+      <Text style={styles.textContent}>{currentObservation?.description}</Text>
       <Text style={styles.label}>Scientific Information:</Text>
       <Text style={styles.textContent}>science info...</Text>
     </ScrollView>

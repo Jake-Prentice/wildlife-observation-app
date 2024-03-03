@@ -2,7 +2,7 @@ import {collection, addDoc, getDocs, doc, getDoc, setDoc, where, query, updateDo
 import {db, storage} from "src/FirebaseConfig";
 import {ref, uploadBytesResumable, getDownloadURL, uploadBytes, UploadMetadata} from "firebase/storage";
 import { ImageToUpload, ObservationToUpload } from "@/contexts/ObservationContext";
-import { ObservationSchema } from "./schemas";
+import { AnimalName, ObservationSchema } from "./schemas";
 
 const getImageBlob = async (image: string): Promise<Blob> => {
   try {
@@ -126,6 +126,8 @@ export const getAnimal = async (name: string) => {
 //with side effects: if animal doesn't exist in animals collection, add it. 
 //returns the animal id
 export const processAnimalName = async (name: string) => {
+    //make sure there's no spaces
+    name = name.replace(/\s+/g, '').toLowerCase()
     let animalId = await getAnimal(name);
 
     if (!animalId) {
@@ -138,6 +140,7 @@ export const processAnimalName = async (name: string) => {
 
 //adds an animal name to an observation
 export const addAnimalName = async (observationId: string, name: string) => {
+    name = name.replace(/\s+/g, '').toLowerCase();
     // Ensure the animal exists in the 'animals' collection, and get its ID
     const animalId = await processAnimalName(name);
 
@@ -145,7 +148,7 @@ export const addAnimalName = async (observationId: string, name: string) => {
     const animalName = {
         refId: animalId,
         name: name,
-        upvotes: 0 
+        upvotes: 1 
     };
 
     // Add the AnimalName to the observation's 'animalName' array
@@ -154,4 +157,48 @@ export const addAnimalName = async (observationId: string, name: string) => {
     });
 
     console.log(`AnimalName ${name} added to observation ${observationId}`);
+};
+
+//upvote an animal name within an observation
+export const upvoteAnimalName = async (observationId: string, animalRefId: string) => {
+    const observationRef = doc(db, 'observations', observationId);
+    const observationSnapshot = await getDoc(observationRef);
+
+    if (!observationSnapshot.exists()) {
+        throw new Error('Observation document does not exist');
+    }
+
+    const observationData = observationSnapshot.data();
+    const updatedAnimalNames = observationData.animalName.map((animal: AnimalName) => {
+        if (animal.refId === animalRefId) {
+            return { ...animal, upvotes: animal.upvotes + 1 };
+        }
+        return animal;
+    });
+
+    await updateDoc(observationRef, {
+        animalName: updatedAnimalNames
+    });
+};
+
+//downvote an animal name within an observation
+export const downvoteAnimalName = async (observationId: string, animalRefId: string) => {
+    const observationRef = doc(db, 'observations', observationId);
+    const observationSnapshot = await getDoc(observationRef);
+
+    if (!observationSnapshot.exists()) {
+        throw new Error('Observation document does not exist');
+    }
+
+    const observationData = observationSnapshot.data();
+    const updatedAnimalNames = observationData.animalName.map((animal: AnimalName) => {
+        if (animal.refId === animalRefId && animal.upvotes > 0) {
+            return { ...animal, upvotes: animal.upvotes - 1 };
+        }
+        return animal;
+    });
+
+    await updateDoc(observationRef, {
+        animalName: updatedAnimalNames
+    });
 };
