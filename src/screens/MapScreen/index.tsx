@@ -31,6 +31,8 @@ const MapScreen = ({route, navigation}: Props) => {
 
     const [userLocation, setUserLocation] = useState<Location.LocationObject | undefined>(undefined);
 
+    const [mapType, setMapType] = useState<'standard' | 'hybrid'>('standard');
+
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
     const mapRef = useRef<MapView>(null);
@@ -74,7 +76,12 @@ const MapScreen = ({route, navigation}: Props) => {
     
     const onCalloutPress = (observation: ObservationSchema & {id: string}) => {
         navigation.navigate("Observation", {screen: "ViewObservation", params: {observation}})
-    }
+    };
+
+    //change between hybrid and standard map
+    const toggleMapType = () => {
+        setMapType(prevMapType => (prevMapType === 'standard' ? 'hybrid' : 'standard'));
+    };
 
     //TODO - radius circle around marker when clicked...
     return (
@@ -83,6 +90,8 @@ const MapScreen = ({route, navigation}: Props) => {
                 ref={mapRef}
                 provider={PROVIDER_GOOGLE}
                 style={styles.map}
+                mapType={mapType}
+                showsUserLocation
             > 
                 {observations.data.map(observation => (
                     <Marker
@@ -113,6 +122,13 @@ const MapScreen = ({route, navigation}: Props) => {
             >
                 <FontAwesome6 name="location-crosshairs" size={25} style={{color: "white"}}/>
             </TouchableOpacity>
+
+            <TouchableOpacity 
+                onPress={toggleMapType}
+                style={styles.toggleMapButton}
+            >
+                <FontAwesome6 name="layer-group" size={25} style={{color: "white"}} />
+          </TouchableOpacity>
         </View>
     );
 };
