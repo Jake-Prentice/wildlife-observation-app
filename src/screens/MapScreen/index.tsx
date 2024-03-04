@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Button } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Button, Modal, TextInput } from 'react-native';
 import MapView, {Callout, LatLng, Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import * as Location from 'expo-location';
 import {FontAwesome6} from '@expo/vector-icons';
@@ -23,6 +23,37 @@ type Props = {
     navigation: any;
 }
 
+const SearchBarModal = ({ visible, onClose, onSearch }: {visible: boolean; onClose: any, onSearch: any}) => {
+    const [searchTerm, setSearchTerm] = useState('');
+  
+    return (
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={visible}
+        onRequestClose={onClose}
+      >
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={onClose}
+        >
+          <View style={styles.modalContent}>
+            <TextInput
+              style={styles.input}
+              value={searchTerm}
+              onChangeText={setSearchTerm}
+              placeholder="Search"
+              autoFocus={true}
+              returnKeyType="search"
+              onSubmitEditing={() => onSearch(searchTerm)}
+            />
+          </View>
+        </TouchableOpacity>
+      </Modal>
+    );
+  };
+
 const MapScreen = ({route, navigation}: Props) => {
 
     const observations = useObservations();
@@ -33,7 +64,15 @@ const MapScreen = ({route, navigation}: Props) => {
 
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
+    //search bar
+    const [isSearchBarFocused, setSearchBarFocused] = useState(false);    
+
     const mapRef = useRef<MapView>(null);
+
+    useEffect(() => {
+        //turn the header off when the search bar is opened
+        // navigation.setOptions({headerShown: !isSearchBarFocused}); //TODO - that won't work
+    }, [isSearchBarFocused])
 
     //animates to some location
     const goToLocation = (location: Location.LocationObject | undefined) => {
@@ -113,8 +152,21 @@ const MapScreen = ({route, navigation}: Props) => {
             >
                 <FontAwesome6 name="location-crosshairs" size={25} style={{color: "white"}}/>
             </TouchableOpacity>
+            <SearchBar onSearchBarPress={() => setSearchModalVisible(true)} />
+            <SearchBarModal
+                visible={searchModalVisible}
+                onClose={() => setSearchModalVisible(false)}
+                onSearch={handleSearch}
+            />
+            {/* {isSearchBarFocused ? (
+                <SearchBarModal visible={isSearchBarFocused} onClose={() => setSearchBarFocused(true)} onSearch={() => {}}/>
+            ): (
+                <View>
+
+                </View>
+            )} */}
         </View>
     );
 };
 
-export default MapScreen;
+export default MapScreen;  

@@ -28,8 +28,6 @@ const getLocationInfo = (images: UseCamera[]) => {
         acc.longitude += image?.current?.exif?.GPSLongitude;
         return acc;
     }, { latitude: 0, longitude: 0 });
-
-    console.log(images[0]?.current?.exif?.GPSLatitude, images[0]?.current?.exif?.GPSLongitude)
     
     location.latitude = centroid.latitude / images.length;
     location.longitude = centroid.longitude / images.length;
