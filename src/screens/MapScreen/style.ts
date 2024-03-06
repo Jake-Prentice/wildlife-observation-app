@@ -1,5 +1,7 @@
 import { StyleSheet } from 'react-native';
 
+const NAVIGATOR_HEIGHT = 90; //height of the bottom navigator
+
 const styles = StyleSheet.create({
     container: {
         width: "100%",
@@ -14,11 +16,18 @@ const styles = StyleSheet.create({
     },
     currentLocationButton: {
         backgroundColor: "#3d8afe",
-        padding: 7,
+        padding: 11,
         borderRadius: 50,
         position: "absolute", 
-        //TODO - should probably make the 90 a constant somewhere and import it in
-        bottom: 90 + 60, // 90 is the height of the bottom navigator, 60 is the height of the current location icon 
+        bottom: NAVIGATOR_HEIGHT + 30, // 90 is the height of the bottom navigator, 30 is the height of the current location icon 
+        right: 40
+    },
+    toggleMapButton: {
+        backgroundColor: '#3d8afe',
+        padding: 10,
+        borderRadius: 50,
+        position: 'absolute',
+        bottom: NAVIGATOR_HEIGHT + 100, 
         right: 40
     },
     calloutContainer: {
