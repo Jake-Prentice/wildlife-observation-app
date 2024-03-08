@@ -115,32 +115,32 @@ const LoginScreen = ({navigation}: Props) => {
     >
     <View style={styles.container}>
       <View style={styles.loginBox}>
-      <Text style={styles.title}>Login</Text>
-      <TextBox
-        placeholder='Email'
-        val = {email}
-        valHook = {setEmail}
-        keyboard='email-address'
-        />
-        <PasswordBox
-        placeholder='Password'
-        val = {password}
-        valHook = {setPassword}
-        keyboard='default'
-        />
-      {error ? <Text style={styles.error}>{error}</Text> : null}
-      <TouchableOpacity style={{width:'100%'}} onPress={handleLogin}>
-          <LinearGradient style={styles.button} colors={["#005FEF", "#3d8afe"]}>
-              <Text style={styles.buttonText}>Log In</Text>
-          </LinearGradient>
-          </TouchableOpacity>
-      <TouchableOpacity
-        onPress={() => navigation.navigate('Register')} // Use your navigation method here
-        style={styles.registerButton}
-      >
-        <Text style={styles.registerButtonText}>Don't have an account? Register</Text>
-      </TouchableOpacity>
-      </View>
+        <Text style={styles.title}>Login</Text>
+        <TextBox
+            placeholder='Email'
+            val = {email}
+            valHook = {setEmail}
+            keyboard='email-address'
+          />
+          <PasswordBox
+            placeholder='Password'
+            val={password}
+            valHook = {setPassword}
+            keyboard='default'
+          />
+        {error ? <Text style={styles.error}>{error}</Text> : null}
+        <TouchableOpacity style={{width:'100%'}} onPress={handleLogin}>
+            <LinearGradient style={styles.button} colors={["#005FEF", "#3d8afe"]}>
+                <Text style={styles.buttonText}>Log In</Text>
+            </LinearGradient>
+            </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Register')} // Use your navigation method here
+          style={styles.registerButton}
+        >
+          <Text style={styles.registerButtonText}>Don't have an account? Register</Text>
+        </TouchableOpacity>
+        </View>
     </View>
   </TouchableWithoutFeedback>
   );
