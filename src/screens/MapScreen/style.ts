@@ -4,6 +4,7 @@ const styles = StyleSheet.create({
     container: {
         width: "100%",
         height: "100%",
+        alignItems: 'center',
     },
     title: {
         fontSize: 24,
@@ -11,6 +12,8 @@ const styles = StyleSheet.create({
     },
     map: {
         flex: 1,
+        width: "100%",
+        height: "100%",
     },
     currentLocationButton: {
         backgroundColor: "#3d8afe",
@@ -48,20 +51,98 @@ const styles = StyleSheet.create({
       //search bar modal styles
       modalOverlay: {
         flex: 1,
-        justifyContent: 'center',
+        // justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
       },
+
       modalContent: {
-        width: '80%',
+        width: '90%', //same as searchBarContainer
+        // borderColor: "black",
+        // borderWidth: 1,
         backgroundColor: 'white',
-        padding: 20,
-        borderRadius: 10,
+        padding: 15,
         elevation: 10,
+        borderRadius: 15,
+        gap: 10
+        // height: 200,
       },
-      input: {
-        // styles for the input field
+
+      modalInput: {
+        // borderColor: "black",
+        // borderWidth: 1,
       },
+
+      listItem: {
+        flexDirection: 'row',
+        padding: 10,
+        borderBottomWidth: 1,
+        borderBottomColor: 'lightgrey',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+      },
+      listItemText: {
+        // fontSize: 18,
+      },
+      addButton: {
+        // borderWidth: 1,
+        // borderColor: 'blue',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: 30,
+        height: 30,
+        backgroundColor: '#3d8afe',
+        borderRadius: 15,
+      },
+      addButtonText: {
+        color: 'blue',
+        fontSize: 24,
+        fontWeight: 'bold',
+      },
+
+      searchBarContainer: {
+        width: "90%",
+        backgroundColor: "white",
+        position: "absolute",
+        marginTop: 50,
+        borderRadius: 15,
+        borderColor: "rgba(32, 32, 32, 0.299)",
+        borderWidth: 3,
+        // justifyContent: "center",
+        alignItems: "center",
+        flexDirection: "row",
+      },
+
+      searchBar: {
+        flex:1,
+        // borderColor: "black",
+        // borderWidth: 1,
+        flexDirection: "row",
+        alignItems: "center",
+        height: "100%",
+        gap: 5,
+        paddingLeft: 20
+      },
+
+      searchBarIconContainer: {
+        borderColor: "rgba(32, 32, 32, 0.2)",
+        borderLeftWidth: 3,
+        height: "100%",
+        justifyContent: "center",
+        gap: 10,
+        flexDirection: "row",
+        padding: 5,
+        paddingHorizontal: 10,
+        
+      },
+
+      searchBarIcon: {
+        borderRadius: 100,
+        padding: 8,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#3d8afe",
+      }
 });
 
 export default styles

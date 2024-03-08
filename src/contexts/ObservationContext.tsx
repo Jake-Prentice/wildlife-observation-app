@@ -4,7 +4,7 @@ import { UseCamera } from '@/hooks/useCamera';
 import * as services from '@/services/observations';
 import { DocumentData, collection, onSnapshot, query } from 'firebase/firestore';
 import { db } from 'src/FirebaseConfig'; 
-import { AnimalName, ObservationSchema } from '@/services/schemas';
+import { AnimalName, AnimalSchema, ObservationSchema } from '@/services/schemas';
 import { useUser } from './UserContext';
 
 //distance between longitude and latitude of two points (in km)
@@ -79,6 +79,7 @@ export type ObservationToUpload = {
 export interface IObservationsValue {
     //the id gets added in the onSnapshot
     data: (ObservationSchema & {id: string})[];
+    animals: AnimalSchema[]; 
     add: (observation: {animalName: string, description: string, images: UseCamera[]}) => Promise<void>;
     isUploading: boolean;
 }
@@ -86,7 +87,10 @@ export interface IObservationsValue {
 const ObservationContext = createContext<Partial<IObservationsValue>>({});
 
 export const ObservationProvider = ({ children }: { children: React.ReactNode }) => {
+    //states
     const [observations, setObservations] = useState<(ObservationSchema & {id: string})[]>([]);
+    const [animals, setAnimals] = useState<AnimalSchema[]>([]);
+    //flags
     const [isUploading, setIsUploading] = useState(false);
 
     const user = useUser();
@@ -138,6 +142,7 @@ export const ObservationProvider = ({ children }: { children: React.ReactNode })
         }
     }
 
+    //look for changes in observations db and update it's state
     useEffect(() => {
         const collectionRef = collection(db, 'observations');
         const q = query(collectionRef);
@@ -153,10 +158,23 @@ export const ObservationProvider = ({ children }: { children: React.ReactNode })
         return () => unsubscribe();
     }, []);
 
+    //look for changes in animals db and update it's state
+    useEffect(() => {
+        const unsubscribe = onSnapshot(query(collection(db, 'animals')), (snapshot) => {
+            const loadedAnimals = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...(doc.data() as {name: string, hasScienceInfo: boolean} ),
+            }));
+            setAnimals(loadedAnimals);
+        });
+        return () => unsubscribe(); 
+    }, []);
+
     const value = {
         data: observations,
         isUploading,
-        add
+        add,
+        animals
     };
 
     return (

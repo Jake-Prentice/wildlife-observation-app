@@ -1,15 +1,18 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Button, Modal, TextInput } from 'react-native';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Button, Modal, TextInput, ListRenderItem } from 'react-native';
 import MapView, {Callout, LatLng, Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import * as Location from 'expo-location';
-import {FontAwesome6} from '@expo/vector-icons';
+import {FontAwesome6, FontAwesome} from '@expo/vector-icons';
 import { useObservations } from '@/contexts/ObservationContext';
-import { RouteProp } from '@react-navigation/native';
-import { ObservationStackParamList } from '@/navigation/ObservationStackNavigator';
-import { BottomTabParamList } from '@/navigation/BottomTabNavigator';
+import { useHeaderHeight } from '@react-navigation/elements';
 import { AntDesign } from '@expo/vector-icons';
-import { ObservationSchema } from '@/services/schemas';
+import { AnimalName, AnimalSchema, ObservationSchema } from '@/services/schemas';
 import styles from './style';
+import FilterModal from './FilterModal';
+import ListModal from './ListModal';
+import { FlatList } from '@gluestack-ui/themed';
+import { Feather } from '@expo/vector-icons';
+import useSearchAndFilter, { CurrentAnimal } from '@/hooks/useSearchAndFilter';
 
 //the latitudeDelta and longitudeDelta determine the zoom level of the map
 const defaultZoomDistance = { 
@@ -23,9 +26,35 @@ type Props = {
     navigation: any;
 }
 
-const SearchBarModal = ({ visible, onClose, onSearch }: {visible: boolean; onClose: any, onSearch: any}) => {
-    const [searchTerm, setSearchTerm] = useState('');
-  
+const SearchBarModal = (
+    { visible, onClose, onSearch, animalList, addAnimal, currentAnimals }: 
+    {visible: boolean; onClose: any; onSearch: any; animalList: AnimalSchema[], addAnimal: (animal: AnimalSchema) => void; currentAnimals: CurrentAnimal[]}
+) => {
+    const [searchQuery, setSearchQuery] = useState('');
+    const [filteredData, setFilteredData] = useState<AnimalSchema[]>(animalList);
+
+    const headerHeight = useHeaderHeight();
+
+    //filter the data as the user types in the search bar
+    useEffect(() => {
+        const newData = animalList.filter((item) => item.name.toLowerCase()
+                                                            .replace(/\s+/g, '')
+                                                            .includes(searchQuery.toLowerCase()));
+        setFilteredData(newData);
+    }, [searchQuery])
+
+    const renderItem: ListRenderItem<AnimalSchema> = ({ item }) => (
+        <View style={styles.listItem}>
+          <Text style={styles.listItemText}>{item.name}</Text>
+          <TouchableOpacity
+            style={styles.addButton}
+            onPress={() => addAnimal(item)}
+          >
+            <Feather name="plus" size={20} color="white" />
+          </TouchableOpacity>
+        </View>
+    );
+
     return (
       <Modal
         animationType="fade"
@@ -34,45 +63,74 @@ const SearchBarModal = ({ visible, onClose, onSearch }: {visible: boolean; onClo
         onRequestClose={onClose}
       >
         <TouchableOpacity
-          style={styles.modalOverlay}
-          activeOpacity={1}
-          onPress={onClose}
-        >
-          <View style={styles.modalContent}>
-            <TextInput
-              style={styles.input}
-              value={searchTerm}
-              onChangeText={setSearchTerm}
-              placeholder="Search"
-              autoFocus={true}
-              returnKeyType="search"
-              onSubmitEditing={() => onSearch(searchTerm)}
-            />
-          </View>
+            style={styles.modalOverlay}
+            activeOpacity={1}
+            onPress={onClose}
+            >
+            <View style={{...styles.modalContent, marginTop: headerHeight + 50}}>
+                <TextInput
+                    style={styles.modalInput}
+                    value={searchQuery}
+                    onChangeText={setSearchQuery}
+                    placeholder="Search"
+                    autoFocus={true}
+                    returnKeyType="search"
+                    onSubmitEditing={() => {
+                        onSearch(searchQuery)
+                    }}
+                />
+                <FlatList
+                    data={filteredData}
+                    renderItem={renderItem}
+                    keyExtractor={item => item.id}
+                />
+            </View>
         </TouchableOpacity>
       </Modal>
     );
-  };
+};
+
+const SearchBar = (
+    { onSearchBarPress, onListPress, onFilterPress, isVisible}: 
+    {onSearchBarPress: () => void, onListPress: () => void, onFilterPress: () => void, isVisible: boolean}
+) => {
+    return (
+        <View style={{...styles.searchBarContainer, display: isVisible ? "flex" : "none"}}> 
+            <TouchableOpacity style={styles.searchBar} onPress={onSearchBarPress}>
+                <FontAwesome name="search" size={24} color="black" />
+                <Text>Search</Text>
+            </TouchableOpacity>
+            <View style={styles.searchBarIconContainer}>
+                <TouchableOpacity onPress={onListPress} style={styles.searchBarIcon}>
+                    <FontAwesome name="list" size={20} color="white"/>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={onFilterPress} style={styles.searchBarIcon}>
+                    <AntDesign name="filter" size={20} style={{color: "white"}}/>
+                </TouchableOpacity>
+            </View>
+        </View>
+    );
+}
 
 const MapScreen = ({route, navigation}: Props) => {
 
-    const observations = useObservations();
+    const {
+        observations,
+        addAnimal,
+        filteredObservations,
+        currentAnimals,
+        deleteAnimal
+    } = useSearchAndFilter();
 
+    //map states
     const [currentLocation, setCurrentLocation] = useState<Location.LocationObject | undefined>(undefined);
-
     const [userLocation, setUserLocation] = useState<Location.LocationObject | undefined>(undefined);
-
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
-
-    //search bar
-    const [isSearchBarFocused, setSearchBarFocused] = useState(false);    
-
     const mapRef = useRef<MapView>(null);
-
-    useEffect(() => {
-        //turn the header off when the search bar is opened
-        // navigation.setOptions({headerShown: !isSearchBarFocused}); //TODO - that won't work
-    }, [isSearchBarFocused])
+    //search bar states
+    const [isSearchBarFocused, setSearchBarFocused] = useState(false);    
+    const [isListModalActive, setListModalActive] = useState(false);
+    const [isFilterModalActive, setFilterModalActive] = useState(false);
 
     //animates to some location
     const goToLocation = (location: Location.LocationObject | undefined) => {
@@ -123,7 +181,7 @@ const MapScreen = ({route, navigation}: Props) => {
                 provider={PROVIDER_GOOGLE}
                 style={styles.map}
             > 
-                {observations.data.map(observation => (
+                {filteredObservations.map(observation => (
                     <Marker
                         key={observation.id}
                         coordinate={{
@@ -152,19 +210,34 @@ const MapScreen = ({route, navigation}: Props) => {
             >
                 <FontAwesome6 name="location-crosshairs" size={25} style={{color: "white"}}/>
             </TouchableOpacity>
-            <SearchBar onSearchBarPress={() => setSearchModalVisible(true)} />
-            <SearchBarModal
-                visible={searchModalVisible}
-                onClose={() => setSearchModalVisible(false)}
-                onSearch={handleSearch}
-            />
-            {/* {isSearchBarFocused ? (
-                <SearchBarModal visible={isSearchBarFocused} onClose={() => setSearchBarFocused(true)} onSearch={() => {}}/>
-            ): (
-                <View>
 
-                </View>
-            )} */}
+            {/* search bar stuff */}
+            <>
+            <SearchBar 
+                isVisible={!isSearchBarFocused}
+                onSearchBarPress={() => setSearchBarFocused(true)}
+                onFilterPress={() => setFilterModalActive(true)}
+                onListPress={() => setListModalActive(true)}
+             />
+            <SearchBarModal
+                currentAnimals={currentAnimals}
+                addAnimal={addAnimal}
+                animalList={observations.animals}
+                visible={isSearchBarFocused}
+                onClose={() => setSearchBarFocused(false)}
+                onSearch={() => {}}
+            />
+            <FilterModal 
+                isVisible={isFilterModalActive}
+                onClose={() => setFilterModalActive(false)}
+            />
+            <ListModal 
+                onDeleteAnimal={deleteAnimal}
+                currentAnimals={currentAnimals}
+                isVisible={isListModalActive}
+                onClose={() => setListModalActive(false)}
+            />
+        </>
         </View>
     );
 };

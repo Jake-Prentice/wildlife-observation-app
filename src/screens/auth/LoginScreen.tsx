@@ -117,16 +117,16 @@ const LoginScreen = ({navigation}: Props) => {
       <View style={styles.loginBox}>
         <Text style={styles.title}>Login</Text>
         <TextBox
-          placeholder='Email'
-          val = {email}
-          valHook = {setEmail}
-          keyboard='email-address'
+            placeholder='Email'
+            val = {email}
+            valHook = {setEmail}
+            keyboard='email-address'
           />
           <PasswordBox
-          placeholder='Password'
-          val = {password}
-          valHook = {setPassword}
-          keyboard='default'
+            placeholder='Password'
+            val={password}
+            valHook = {setPassword}
+            keyboard='default'
           />
         {error ? <Text style={styles.error}>{error}</Text> : null}
         <TouchableOpacity style={{width:'100%'}} onPress={handleLogin}>
