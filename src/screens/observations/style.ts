@@ -11,12 +11,16 @@ const styles = StyleSheet.create({
         padding: 13,
         backgroundColor: "white",
     },
+    scrollContainer: {
+      padding: 13,
+      backgroundColor: "white",
+      gap: 20
+    },
     infoContainer: {
       // borderColor: '#000',
       // borderWidth: 1,
       padding: 10,
       backgroundColor: "#f5f5f5", 
-      marginBottom: marginBottom,
     },
 
     helpButton: {
@@ -28,7 +32,6 @@ const styles = StyleSheet.create({
       color: '#0000FF',
     },
     inputContainer: {
-      marginBottom: marginBottom,
     },
     label: {
       fontSize: 16,
@@ -104,6 +107,13 @@ const styles = StyleSheet.create({
       flex:0.2,
       justifyContent: 'center',
       alignItems: 'center',
+    },
+
+    scienceInfoContainer: {
+      marginTop: 20,
+      // padding: 10,
+      // borderColor: '#000',
+      // borderWidth: 1,
     }
 
 

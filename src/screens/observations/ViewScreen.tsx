@@ -7,6 +7,8 @@ import styles from './style';
 import AnimalNameModal from '@/components/AnimalNameModal';
 import { AntDesign } from '@expo/vector-icons';
 import { useObservations } from '@/contexts/ObservationContext';
+import { getAnimalScienceData } from '@/services/animals';
+import AnimalScienceList from './AnimalScienceList';
 
 // Define the types for the navigation and route props
 export type ViewScreenRouteProp = RouteProp<ObservationStackParamList, 'ViewObservation'>;
@@ -27,9 +29,8 @@ const ViewObservationScreen = ({ route }: Props) => {
     return observations.data.find(obs => obs.id === id);
   }, [observations, id]);
 
-
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.infoContainer}>
         <Text style={styles.label}>User: @{currentObservation?.user.name} </Text>
       </View>
@@ -58,10 +59,14 @@ const ViewObservationScreen = ({ route }: Props) => {
           />
         ))}
       </View>
-      <Text style={styles.label}>Description:</Text>
-      <Text style={styles.textContent}>{currentObservation?.description}</Text>
-      <Text style={styles.label}>Scientific Information:</Text>
-      <Text style={styles.textContent}>science info...</Text>
+      <View>
+        <Text style={styles.label}>Description:</Text>
+        <Text style={styles.textContent}>{currentObservation?.description}</Text>
+      </View>
+      <View style={styles.scienceInfoContainer}>
+        <Text style={{fontWeight: "bold"}}>Scientific Information: </Text>
+        <AnimalScienceList animalName={currentObservation?.animalName[0].name} />
+      </View>
     </ScrollView>
   );
 };

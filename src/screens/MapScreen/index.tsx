@@ -37,9 +37,10 @@ const SearchBarModal = (
 
     //filter the data as the user types in the search bar
     useEffect(() => {
-        const newData = animalList.filter((item) => item.name.toLowerCase()
+    
+        const newData = searchQuery ? animalList.filter((item) => item.name.toLowerCase()
                                                             .replace(/\s+/g, '')
-                                                            .includes(searchQuery.toLowerCase()));
+                                                            .includes(searchQuery.toLowerCase())) : animalList
         setFilteredData(newData);
     }, [searchQuery])
 
@@ -74,10 +75,7 @@ const SearchBarModal = (
                     onChangeText={setSearchQuery}
                     placeholder="Search"
                     autoFocus={true}
-                    returnKeyType="search"
-                    onSubmitEditing={() => {
-                        onSearch(searchQuery)
-                    }}
+              
                 />
                 <FlatList
                     data={filteredData}
