@@ -77,7 +77,7 @@ const ViewObservationScreen = ({ route }: Props) => {
         ))}
       </View>
       <View style={styles.scienceInfoContainer}>
-        <Text style={{fontWeight: "bold"}}>Scientific Information: </Text>
+        <Text style={styles.label}>Scientific Information: </Text>
         <AnimalScienceList animalName={currentObservation?.animalName[0].name} />
       </View>
     </ScrollView>
