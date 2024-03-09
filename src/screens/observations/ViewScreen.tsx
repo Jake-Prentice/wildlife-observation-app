@@ -28,6 +28,7 @@ const ViewObservationScreen = ({ route }: Props) => {
   const currentObservation = useMemo(() => {
     return observations.data.find(obs => obs.id === id);
   }, [observations, id]);
+/*
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -35,27 +36,47 @@ const ViewObservationScreen = ({ route }: Props) => {
         <Text style={styles.label}>User: @{currentObservation?.user.name} </Text>
       </View>
       <View style={styles.animalNameContainer}>
-          <View style={styles.animalNameButton}>
-              <View style={styles.animalNameText}>
-                  <Text>Animal Name: {currentObservation?.animalName[0].name}</Text>
+      <View style={styles.animalImageMain}>
+        {currentObservation?.images.map((imgUri, index) => (
+          index == 0 ? <ImageModal //There HAS to be a better way.....
+            key={index} 
+            source={imgUri} 
+            style={styles.image} 
+          /> : undefined
+        ))}
+      </View>
+          
+          <Text style={styles.animalNameBig}>{currentObservation?.animalName[0].name}</Text>
+          <Text style={styles.usernameText}>Submitted by @{currentObservation?.user.name} </Text>
+      </View>
+      <View style={styles.animalNameButton}>
+              <View>
+                  <Text style={styles.animalNameText}>Animal Name: {currentObservation?.animalName[0].name}</Text>
               </View>
               <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.animalNameIcon}>
                   <AntDesign name="rightcircle" size={20} color="#3d8afe" />
               </TouchableOpacity>
-          </View>
-          <AnimalNameModal 
+              <AnimalNameModal 
               isVisible={modalVisible} 
               setIsVisible={setModalVisible} 
               animalNames={currentObservation?.animalName}
               observationId={id}
           />
-      </View>
-      <View style={styles.imagePickerContainer}>
+          </View>
+      <Text style={styles.label}>Description:</Text>
+      <View style={styles.line} />
+      <Text style={styles.textContent}>{currentObservation?.description}</Text>
+      <Text style={styles.label}>Scientific Information:</Text>
+      <View style={styles.line} />
+      <Text style={styles.textContent}>science info...science info...science info...science info...science info...science info...science info...</Text>
+      <Text style={styles.label}>Gallery</Text>
+      <View style={styles.line} />
+      <View style={styles.galleryImages}>
         {currentObservation?.images.map((imgUri, index) => (
           <ImageModal 
             key={index} 
             source={imgUri} 
-            style={styles.image} 
+            style={styles.galleryImage} 
           />
         ))}
       </View>
