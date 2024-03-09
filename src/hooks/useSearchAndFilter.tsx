@@ -123,7 +123,6 @@ const useSearchAndFilter = () => {
             //date criteria
             if (observationDate < filterCriteria.startDate) return;
             if (observationDate > filterCriteria.endDate) return;
-            console.log(index, {currentAnimal})
             //time criteria
             const startMinutes = toMinutesSinceMidnight(filterCriteria.startTime);
             const endMinutes = toMinutesSinceMidnight(filterCriteria.endTime);

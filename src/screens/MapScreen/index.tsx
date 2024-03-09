@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Button, Modal, TextInput, ListRenderItem } from 'react-native';
-import MapView, {Callout, LatLng, Marker, PROVIDER_GOOGLE} from 'react-native-maps';
+import MapView, {Callout, Circle, LatLng, Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import * as Location from 'expo-location';
 import {FontAwesome6, FontAwesome} from '@expo/vector-icons';
 import { useObservations } from '@/contexts/ObservationContext';
@@ -12,7 +12,7 @@ import FilterModal from './FilterModal';
 import ListModal from './ListModal';
 import { FlatList } from '@gluestack-ui/themed';
 import { Feather } from '@expo/vector-icons';
-import useSearchAndFilter, { CurrentAnimal } from '@/hooks/useSearchAndFilter';
+import useSearchAndFilter, { CurrentAnimal, FilteredObservation } from '@/hooks/useSearchAndFilter';
 
 //the latitudeDelta and longitudeDelta determine the zoom level of the map
 const defaultZoomDistance = { 
@@ -135,6 +135,7 @@ const MapScreen = ({route, navigation}: Props) => {
     const [mapType, setMapType] = useState<'standard' | 'hybrid'>('standard');
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
     const mapRef = useRef<MapView>(null);
+    const [currentMarker, setCurrentMarker] = useState<FilteredObservation | null>(null);
     //search bar states
     const [isSearchBarFocused, setSearchBarFocused] = useState(false);    
     const [isListModalActive, setListModalActive] = useState(false);
@@ -150,6 +151,20 @@ const MapScreen = ({route, navigation}: Props) => {
             }, 500); // 500 ms animation
         }
     };
+
+    const addSearchAnimal = (animal: AnimalSchema) => {
+        //addAnimal(animal);
+        //autoFilterCriteria();
+        //handleFocusedObservation(userLocation, animal)
+    }
+
+    /*
+        useEffect(() => {
+            if (!focusedObservation) return;
+            gotToLocation(focusedObservation.location)
+        }, [focusedObservation])
+    
+    */ 
 
     //control the region of the map displayed,
     //by the currentLocation state
@@ -172,12 +187,12 @@ const MapScreen = ({route, navigation}: Props) => {
             setUserLocation(location);
             //if no location is set, set the current location to the user's location,
             //if coming from the add observation screen, it will focus on that newest observation
-            console.log("k", observations.newObservation)
             if (route.params?.initialLocation) setCurrentLocation(route.params.initialLocation);
             else setCurrentLocation(location);
         })();
     }, []);
     
+    //go to view-observation screen
     const onCalloutPress = (observation: ObservationSchema & {id: string}) => {
         navigation.navigate("Observation", {screen: "ViewObservation", params: {observation}})
     };
@@ -197,8 +212,11 @@ const MapScreen = ({route, navigation}: Props) => {
                 mapType={mapType}
                 showsUserLocation
             > 
+                {/* {currentMarker && <Circle center={currentMarker.location} radius={currentMarker.location.radius * 1000} fillColor={currentMarker.color} />} */}
                 {filteredObservations.map(observation => (
                     <Marker
+                        onPress={() => {setCurrentMarker(observation); console.log("on")}}
+                        onDeselect={() => {setCurrentMarker(null); console.log("off")}}
                         pinColor={observation.color}
                         key={observation.id}
                         coordinate={{
