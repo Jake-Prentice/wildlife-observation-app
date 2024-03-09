@@ -73,8 +73,8 @@ const LoginScreen = ({navigation}: Props) => {
         value={prop.val}
         onChangeText={prop.valHook}
         onEndEditing={() => {prop.valHook(text)}}
-        onFocus={() => {setFocused(true)}}
-        onBlur={() => {setFocused(false)}}
+        // onFocus={() => {setFocused(true)}}
+        // onBlur={() => {setFocused(false)}}
         keyboardType={prop.keyboard}
         autoCapitalize="none"
       />);
@@ -90,44 +90,47 @@ const LoginScreen = ({navigation}: Props) => {
       {shadowOpacity: focused ? 0.5 : 0}, 
       {borderColor: focused ? 'royalblue' : 'gray'},
       styles.passwordContainer]}>
-    <TextInput 
-      style={styles.passwordField}
-      placeholder={prop.placeholder}
-      //autoComplete='one-time-code'
-      autoCapitalize="none"
-      value={prop.val}
-      onFocus={() => {setFocused(true)}}
-      onBlur={() => {setFocused(false)}}
-      onChangeText={prop.valHook}
-      secureTextEntry={!visible}
-      onEndEditing={() => {prop.valHook(text)}}
-      
-    />
-    <TouchableOpacity style={styles.passwordIcon} onPress={() => setVisible(!visible)}>
-      <Ionicons name={visible ? "eye" : "eye-off"} size={20} />
-    </TouchableOpacity>
+        <TextInput 
+          style={styles.passwordField}
+          placeholder={prop.placeholder}
+          //autoComplete='one-time-code'
+          autoCapitalize="none"
+          value={prop.val}
+          // onFocus={() => {setFocused(true)}}
+          // onBlur={() => {setFocused(false)}}
+          onChangeText={prop.valHook}
+          secureTextEntry={!visible}
+          onEndEditing={() => {prop.valHook(text)}}
+          
+        />
+        <TouchableOpacity style={styles.passwordIcon} onPress={() => setVisible(!visible)}>
+          <Ionicons name={visible ? "eye" : "eye-off"} size={20} />
+        </TouchableOpacity>
     </View>
     );
   }
   
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} //Not sure if theres a better way to do this
-    >
+    // <TouchableWithoutFeedback onPress={Keyboard.dismiss} //Not sure if theres a better way to do this
+    // >
     <View style={styles.container}>
       <View style={styles.loginBox}>
         <Text style={styles.title}>Login</Text>
-        <TextBox
-            placeholder='Email'
-            val = {email}
-            valHook = {setEmail}
-            keyboard='email-address'
-          />
-          <PasswordBox
-            placeholder='Password'
-            val={password}
-            valHook = {setPassword}
-            keyboard='default'
-          />
+        <TextInput
+        style={styles.input}
+        placeholder="Email"
+        value={email}
+        onChangeText={setEmail}
+        keyboardType="email-address"
+        autoCapitalize="none"
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Password"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry
+      />
         {error ? <Text style={styles.error}>{error}</Text> : null}
         <TouchableOpacity style={{width:'100%'}} onPress={handleLogin}>
             <LinearGradient style={styles.button} colors={["#005FEF", "#3d8afe"]}>
@@ -142,7 +145,7 @@ const LoginScreen = ({navigation}: Props) => {
         </TouchableOpacity>
         </View>
     </View>
-  </TouchableWithoutFeedback>
+  // </TouchableWithoutFeedback>
   );
 };
 

@@ -26,6 +26,15 @@ export type UseCamera = {
     reset: () => void;
 }
 
+//resolves the latitude, longitude bug
+const getLocationFromExif = (exif: any) => {
+    let latitude = exif["GPSLatitude"];
+    let longitude = exif["GPSLongitude"];
+    if (exif["GPSLatitudeRef"] === "S") latitude = -latitude;
+    if (exif["GPSLongitudeRef"] === "W") longitude = -longitude;
+    return { latitude, longitude };
+}
+
 const useCamera = (initial?: ImagePicker.ImagePickerResult): UseCamera  => {
     const [result, setResult] = useState<ImagePicker.ImagePickerResult | undefined>(initial);
 
@@ -78,7 +87,13 @@ const useCamera = (initial?: ImagePicker.ImagePickerResult): UseCamera  => {
             quality: 1,
         });
 
-        if (!result.canceled) {
+        if (!result.canceled && result.assets[0]) {
+            const location = getLocationFromExif(result.assets[0].exif);
+            result.assets[0].exif = {
+                ...result.assets[0].exif, 
+                "GPSLatitude": location.latitude, 
+                "GPSLongitude": location.longitude
+            }
             const isoTime = parseDate(result.assets[0].exif!.DateTimeOriginal);
             result.assets[0].exif!.timestamp = new Date(isoTime).toString();
         }
@@ -92,7 +107,7 @@ const useCamera = (initial?: ImagePicker.ImagePickerResult): UseCamera  => {
             'Select Photo',
             'Choose how you want to add a photo.',
             [
-                { text: 'Take Photo', onPress: () => takePhoto() },
+                { text: 'Take Photo', onPress: () => takePhoto() }, 
                 { text: 'Choose from Library', onPress: () => pickImage() },
                 { text: 'Cancel', style: 'cancel' },
             ], 
