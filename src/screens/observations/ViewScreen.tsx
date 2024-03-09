@@ -28,7 +28,6 @@ const ViewObservationScreen = ({ route }: Props) => {
   const currentObservation = useMemo(() => {
     return observations.data.find(obs => obs.id === id);
   }, [observations, id]);
-/*
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -66,9 +65,6 @@ const ViewObservationScreen = ({ route }: Props) => {
       <Text style={styles.label}>Description:</Text>
       <View style={styles.line} />
       <Text style={styles.textContent}>{currentObservation?.description}</Text>
-      <Text style={styles.label}>Scientific Information:</Text>
-      <View style={styles.line} />
-      <Text style={styles.textContent}>science info...science info...science info...science info...science info...science info...science info...</Text>
       <Text style={styles.label}>Gallery</Text>
       <View style={styles.line} />
       <View style={styles.galleryImages}>
@@ -79,10 +75,6 @@ const ViewObservationScreen = ({ route }: Props) => {
             style={styles.galleryImage} 
           />
         ))}
-      </View>
-      <View>
-        <Text style={styles.label}>Description:</Text>
-        <Text style={styles.textContent}>{currentObservation?.description}</Text>
       </View>
       <View style={styles.scienceInfoContainer}>
         <Text style={{fontWeight: "bold"}}>Scientific Information: </Text>
