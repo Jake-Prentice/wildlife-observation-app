@@ -119,15 +119,16 @@ const MapScreen = ({route, navigation}: Props) => {
         addAnimal,
         filteredObservations,
         currentAnimals,
-        deleteAnimal
+        deleteAnimal,
+        changeDateTimeFilter,
+        filterCriteria,
+        changeAnimalColor
     } = useSearchAndFilter();
 
     //map states
     const [currentLocation, setCurrentLocation] = useState<Location.LocationObject | undefined>(undefined);
     const [userLocation, setUserLocation] = useState<Location.LocationObject | undefined>(undefined);
-
     const [mapType, setMapType] = useState<'standard' | 'hybrid'>('standard');
-
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
     const mapRef = useRef<MapView>(null);
     //search bar states
@@ -193,6 +194,7 @@ const MapScreen = ({route, navigation}: Props) => {
             > 
                 {filteredObservations.map(observation => (
                     <Marker
+                        pinColor={observation.color}
                         key={observation.id}
                         coordinate={{
                             latitude: observation.location.latitude,
@@ -221,8 +223,14 @@ const MapScreen = ({route, navigation}: Props) => {
                 <FontAwesome6 name="location-crosshairs" size={25} style={{color: "white"}}/>
             </TouchableOpacity>
 
+            <TouchableOpacity 
+                onPress={toggleMapType}
+                style={styles.toggleMapButton}
+            >
+                <FontAwesome6 name="layer-group" size={25} style={{color: "white"}} />
+            </TouchableOpacity>
+
             {/* search bar stuff */}
-            <>
             <SearchBar 
                 isVisible={!isSearchBarFocused}
                 onSearchBarPress={() => setSearchBarFocused(true)}
@@ -238,22 +246,19 @@ const MapScreen = ({route, navigation}: Props) => {
                 onSearch={() => {}}
             />
             <FilterModal 
+                filterCriteria={filterCriteria}
+                setIsVisible={setFilterModalActive}
+                changeDateTimeFilter={changeDateTimeFilter}
                 isVisible={isFilterModalActive}
                 onClose={() => setFilterModalActive(false)}
             />
             <ListModal 
+                changeAnimalColor={changeAnimalColor}
                 onDeleteAnimal={deleteAnimal}
                 currentAnimals={currentAnimals}
                 isVisible={isListModalActive}
                 onClose={() => setListModalActive(false)}
             />
-        </>
-            <TouchableOpacity 
-                onPress={toggleMapType}
-                style={styles.toggleMapButton}
-            >
-                <FontAwesome6 name="layer-group" size={25} style={{color: "white"}} />
-          </TouchableOpacity>
         </View>
     );
 };
