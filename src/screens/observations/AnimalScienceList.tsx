@@ -29,14 +29,15 @@ const AnimalItem: React.FC<AnimalItemProps> = ({ data }) => {
   };
   
 
-const AnimalScienceList = (animalName: string | undefined) => {
+const AnimalScienceList = ({animalName}: {animalName: string | undefined}) => {
 
     const [data, setData] = useState<Animal[]>([]);
 
     useEffect(() => {
+        console.log({animalName})
         if (!animalName) return;
         (async () => {
-            const data = await getAnimalScienceData("lion")
+            const data = await getAnimalScienceData(animalName)
             setData(data)
         })();
       }, [animalName])
