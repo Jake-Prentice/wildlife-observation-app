@@ -69,9 +69,9 @@ const LoginScreen = ({navigation}: Props) => {
           {shadowOpacity: focused ? 0.5 : 0}, 
           {borderColor: focused ? 'royalblue' : 'gray'}]}
         placeholder={prop.placeholder}
-        autoComplete='one-time-code'//disables autocomplete, have to include due to a bug with ios 17(keyboard top bar 'flickers')
-        value={text}
-        onChangeText={setText}
+        //autoComplete='one-time-code'//disables autocomplete, have to include due to a bug with ios 17(keyboard top bar 'flickers')
+        value={prop.val}
+        onChangeText={prop.valHook}
         onEndEditing={() => {prop.valHook(text)}}
         onFocus={() => {setFocused(true)}}
         onBlur={() => {setFocused(false)}}
@@ -93,12 +93,12 @@ const LoginScreen = ({navigation}: Props) => {
     <TextInput 
       style={styles.passwordField}
       placeholder={prop.placeholder}
-      autoComplete='one-time-code'
+      //autoComplete='one-time-code'
       autoCapitalize="none"
-      value={text}
+      value={prop.val}
       onFocus={() => {setFocused(true)}}
       onBlur={() => {setFocused(false)}}
-      onChangeText={setText}
+      onChangeText={prop.valHook}
       secureTextEntry={!visible}
       onEndEditing={() => {prop.valHook(text)}}
       

@@ -8,15 +8,44 @@ import styles from './style';
 import ImageOrPlaceholder from '@/components/ImageOrPlaceholder';
 import {ButtonSpinner} from "@gluestack-ui/themed"
 import { useObservations } from '@/contexts/ObservationContext';
+import { LinearGradient } from 'expo-linear-gradient';
 
 //TODO - still don't get how these types work!!!!
 export type AddScreenRouteProp = RouteProp<ObservationStackParamList, 'AddObservation'>;
 export type AddScreenNavigationProp = BottomTabNavigationProp<ObservationStackParamList,'AddObservation'>;
 
+/*change text box
+name box
+round images etc
+whitespace
+desc box
+submit button styling
+*/
+
 type Props = {
     route: AddScreenRouteProp;
     navigation: any;
 };
+
+const NameBox = (props: any
+) => {
+const [focused,setFocused] = useState(false);
+return (
+<TextInput 
+{...props}
+style={[props.style,
+{backgroundColor: focused ? '#F5F5F5' : 'transparent'},
+{borderBottomWidth: focused ? 2 : 1}, 
+{borderColor: focused ? 'royalblue' : 'gray'}]}
+autoComplete='one-time-code'//disables autocomplete, have to include due to a bug with ios 17(keyboard top bar 'flickers')
+onFocus={() => {setFocused(true)}}
+onBlur={() => {setFocused(false)}}
+autoCapitalize="none"
+
+/>
+)
+
+}
 
 const AddObservationScreen = ({ route, navigation }: Props) => {
 
@@ -49,17 +78,20 @@ const AddObservationScreen = ({ route, navigation }: Props) => {
   
     return (
       <ScrollView contentContainerStyle={styles.container}>
-        <TouchableOpacity onPress={handleHelpPress} style={styles.helpButton}>
-          <Text style={styles.helpButtonText}>Help</Text>
-        </TouchableOpacity>
-        <View style={styles.inputContainer}>
+        
+        <View style={styles.nameContainer}>
           <Text style={styles.label}>Name:</Text>
-          <TextInput
-            style={styles.input}
+          <NameBox
+            style={styles.animalNameInput}
             value={animalName}
             onChangeText={setAnimalName}
             placeholder="Enter the name of the animal"
           />
+          <TouchableOpacity onPress={handleHelpPress} style={styles.helpButton}>
+          <LinearGradient style={styles.gradient} colors={["#005FEF", "#3d8afe"]}>
+              <Text style={styles.helpButtonText}>Help</Text>
+          </LinearGradient>
+        </TouchableOpacity>
         </View>
         <View style={styles.imagePickerContainer}>
             <ImageOrPlaceholder image={image1} style={styles.image} />
@@ -76,10 +108,12 @@ const AddObservationScreen = ({ route, navigation }: Props) => {
             multiline
           />
         </View>
-        <TouchableOpacity onPress={handleSubmitPress} style={styles.submitButton}>
+        <LinearGradient style={[styles.submitButton]} colors={["#005FEF", "#3d8afe"]}>
+        <TouchableOpacity onPress={handleSubmitPress} style={{width:'50%',alignItems:'center'}}>
             {observations.isUploading && <ButtonSpinner mr="$1" />}
           <Text style={styles.submitButtonText}>Submit</Text>
         </TouchableOpacity>
+        </LinearGradient>
       </ScrollView>
     );
   };

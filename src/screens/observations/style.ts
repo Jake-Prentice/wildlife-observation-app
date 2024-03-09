@@ -16,19 +16,59 @@ const styles = StyleSheet.create({
       // borderWidth: 1,
       padding: 10,
       backgroundColor: "#f5f5f5", 
-      marginBottom: marginBottom,
+      borderRadius: 10,
+      marginBottom: 5,
+      justifyContent:'center'
     },
-
+    animalImageMain: {
+      marginHorizontal:'15%',
+      flexDirection: 'row',
+      borderRadius:500,
+      overflow:'hidden',
+      marginBottom: 10
+    },
+    animalNameBig: {
+      fontSize:32,
+    },
+    line: {
+      borderBottomColor:'gray',
+      borderBottomWidth:1,
+      marginBottom:5
+    },
+    usernameText: {
+      ///fontWeight: 'bold',
+      fontSize:16,
+      color:'gray'
+    },
+    animalNameInput: {
+      flex:1,
+      borderBottomWidth:1,
+      borderColor:'gray',
+      padding:10,
+      marginRight:30,
+      borderRadius:2
+    },
     helpButton: {
       alignSelf: 'flex-end',
-      padding: 10,
+      
+    },
+    gradient:{
+      padding:10,
+      paddingHorizontal:15,
+      borderRadius:10
     },
     helpButtonText: {
       fontSize: 16,
-      color: '#0000FF',
+      color: '#FFF',
     },
     inputContainer: {
       marginBottom: marginBottom,
+    },
+    nameContainer: {
+      flexDirection:'row',
+      alignItems:'center',
+      marginBottom: marginBottom/2,
+      padding:10
     },
     label: {
       fontSize: 16,
@@ -48,10 +88,31 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: marginBottom,
     },
+    galleryImages: {
+      // borderColor: '#000',
+      // borderWidth: 1,
+      flexDirection: 'row',
+      maxHeight:'30%',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      //marginBottom: marginBottom,
+    },
+    galleryImage: {
+      // borderColor: '#000',
+      // borderWidth: 1,
+      aspectRatio:1,
+      marginHorizontal:2,
+      flex:1,
+      borderRadius:2,
+      maxWidth:'33%'
+      //marginBottom: marginBottom,
+    },
     image: {
         flex: 1, 
         aspectRatio: 1, 
         marginHorizontal: 2, 
+        borderRadius:5,
+        overflow:'hidden'
     },
     textArea: {
       borderWidth: 1,
@@ -68,19 +129,24 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       flexDirection: 'row',
       justifyContent: 'center',
+      alignSelf:'center'
     },
     submitButtonText: {
       fontSize: 18,
       color: '#FFF',
     },
     textContent: {
-      
+      paddingBottom:20,
+      marginHorizontal:2,
+      color:'gray'
     },
 
     animalNameContainer: {
-      marginBottom: marginBottom,
-      backgroundColor: "#f5f5f5", 
+      //marginBottom: marginBottom,
+      backgroundColor: "white", 
+      borderRadius:10,
       padding: 15,
+      alignItems:'center'
     },
 
     animalNameButton: {
@@ -90,11 +156,13 @@ const styles = StyleSheet.create({
       // borderWidth: 1,
       // borderColor: '#000',
       padding: 10,
-      borderRadius: 5,
-      backgroundColor: "#ffffff",
+      borderRadius: 10,
+      backgroundColor: "#f5f5f5",
+      marginTop:5,
+      marginBottom:15
     },
     animalNameText: {
-
+      fontSize:16
     },
 
     animalNameIcon: {
