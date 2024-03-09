@@ -138,6 +138,7 @@ const AnimalNameModal = ({
         animationType="slide"
         transparent={true}
         visible={isVisible}
+        
         onRequestClose={() => {
           setIsVisible(!isVisible);
         }}
@@ -171,6 +172,7 @@ const AnimalNameModal = ({
                 value={newAnimalName}
                 onChangeText={setNewAnimalName}
                 style={styles.input}
+                autoFocus={true}
                 placeholder='enter animal name'
               />
             )}
