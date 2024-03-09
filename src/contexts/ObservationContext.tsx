@@ -82,6 +82,7 @@ export interface IObservationsValue {
     animals: AnimalSchema[]; 
     add: (observation: {animalName: string, description: string, images: UseCamera[]}) => Promise<void>;
     isUploading: boolean;
+    newObservation: ObservationSchema | null;
 }
 
 const ObservationContext = createContext<Partial<IObservationsValue>>({});
@@ -89,6 +90,9 @@ const ObservationContext = createContext<Partial<IObservationsValue>>({});
 export const ObservationProvider = ({ children }: { children: React.ReactNode }) => {
     //states
     const [observations, setObservations] = useState<(ObservationSchema & {id: string})[]>([]);
+
+    const [newObservation, setNewObservation] = useState<ObservationSchema | null>(null);
+
     const [animals, setAnimals] = useState<AnimalSchema[]>([]);
     //flags
     const [isUploading, setIsUploading] = useState(false);
@@ -135,8 +139,9 @@ export const ObservationProvider = ({ children }: { children: React.ReactNode })
         observation.location = getLocationInfo(filteredImages);
         //upload to firebase
         try{ 
-            await services.addObservation(observation);
+            const res = await services.addObservation(observation);
             setIsUploading(false);
+            setNewObservation(res);
         }catch(err){
            throw err;
         }
@@ -174,7 +179,8 @@ export const ObservationProvider = ({ children }: { children: React.ReactNode })
         data: observations,
         isUploading,
         add,
-        animals
+        animals,
+        newObservation
     };
 
     return (

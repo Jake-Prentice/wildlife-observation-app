@@ -57,6 +57,8 @@ const useSearchAndFilter = () => {
     const observations = useObservations();
 
     const [currentAnimals, setCurrentAnimals] = useState<CurrentAnimal[]>([]);
+    const [focusedObservation, setFocusedObservation] = useState<ObservationSchema | null>(null);
+
     //TODO - maybe initialise the start date to the earliest observation date
     const [filterCriteria, setFilterCriteria] = useState<FilterCriteria>({
         startDate: new Date(),
@@ -65,6 +67,10 @@ const useSearchAndFilter = () => {
         endTime: new Date().setHours(23, 59, 0, 0) //set initial time to 11:59 PM
     });
 
+    const autoFilterCriteria = () => {
+
+    }
+    
     const changeDateTimeFilter = ({startDate, endDate, startTime, endTime}: FilterCriteria) => {
         startDate.setHours(0, 0, 0, 0);
         endDate.setHours(0, 0, 0, 0);

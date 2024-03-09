@@ -66,12 +66,11 @@ const AddObservationScreen = ({ route, navigation }: Props) => {
         if (!image1.current && !image2.current && !image3.current) return; //TODO - error handling
 
         await observations.add({animalName, description, images: [image1, image2, image3]}); 
-        const observation = observations.data[observations.data.length - 1];
         //navigate to map screen, it should focus to the new observation
         navigation.navigate('Main', {screen: 'Map', params: {initialLocation: {
             coords: {
-              latitude: observation.location.latitude,
-              longitude: observation.location.longitude
+              latitude: observations.newObservation?.location.latitude,
+              longitude: observations.newObservation?.location.longitude
             } 
         }}});
     };

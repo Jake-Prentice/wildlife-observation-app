@@ -37,24 +37,30 @@ const SearchBarModal = (
 
     //filter the data as the user types in the search bar
     useEffect(() => {
-    
         const newData = searchQuery ? animalList.filter((item) => item.name.toLowerCase()
                                                             .replace(/\s+/g, '')
                                                             .includes(searchQuery.toLowerCase())) : animalList
         setFilteredData(newData);
     }, [searchQuery])
 
-    const renderItem: ListRenderItem<AnimalSchema> = ({ item }) => (
-        <View style={styles.listItem}>
+    const isAlreadyActive = (id: string) => {
+        return currentAnimals.some(animal => animal.id === id);
+    }
+
+    const renderItem: ListRenderItem<AnimalSchema> = ({ item }) => {
+        const isDisabled = isAlreadyActive(item.id)
+        return (
+        <View style={{...styles.listItem, opacity: isDisabled ? 0.5 : 1}}>
           <Text style={styles.listItemText}>{item.name}</Text>
           <TouchableOpacity
             style={styles.addButton}
             onPress={() => addAnimal(item)}
+            disabled={isDisabled} 
           >
             <Feather name="plus" size={20} color="white" />
           </TouchableOpacity>
         </View>
-    );
+    )};
 
     return (
       <Modal
@@ -166,6 +172,7 @@ const MapScreen = ({route, navigation}: Props) => {
             setUserLocation(location);
             //if no location is set, set the current location to the user's location,
             //if coming from the add observation screen, it will focus on that newest observation
+            console.log("k", observations.newObservation)
             if (route.params?.initialLocation) setCurrentLocation(route.params.initialLocation);
             else setCurrentLocation(location);
         })();
