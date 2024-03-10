@@ -81,7 +81,9 @@ export interface IObservationsValue {
     animals: AnimalSchema[]; 
     add: (observation: {animalName: string, description: string, images: UseCamera[]}) => Promise<void>;
     isUploading: boolean;
-    newObservation: ObservationSchema | null;
+    focused: ObservationSchema | null;
+    setFocused: React.Dispatch<React.SetStateAction<ObservationSchema | null>>;
+
 }
 
 const ObservationContext = createContext<Partial<IObservationsValue>>({});
@@ -90,7 +92,7 @@ export const ObservationProvider = ({ children }: { children: React.ReactNode })
     //states
     const [observations, setObservations] = useState<(ObservationSchema & {id: string})[]>([]);
 
-    const [newObservation, setNewObservation] = useState<ObservationSchema | null>(null);
+    const [focused, setFocused] = useState<ObservationSchema | null>(null);
 
     const [animals, setAnimals] = useState<AnimalSchema[]>([]);
     //flags
@@ -140,7 +142,7 @@ export const ObservationProvider = ({ children }: { children: React.ReactNode })
         try{ 
             const res = await services.addObservation(observation);
             setIsUploading(false);
-            setNewObservation(res);
+            setFocused(res);
         }catch(err){
            throw err;
         }
@@ -179,7 +181,8 @@ export const ObservationProvider = ({ children }: { children: React.ReactNode })
         isUploading,
         add,
         animals,
-        newObservation
+        focused,
+        setFocused
     };
 
     return (

@@ -128,7 +128,7 @@ const MapScreen = ({route, navigation}: Props) => {
         filterCriteria,
         changeAnimalColor,
         autoFilterCriteria,
-        getClosestObservation
+        getClosestObservation,
     } = useSearchAndFilter();
 
     //map states
@@ -154,20 +154,25 @@ const MapScreen = ({route, navigation}: Props) => {
         }
     };
 
-    const addSearchAnimal = (animal: AnimalSchema) => {
-        //addAnimal(animal);
-        //autoFilterCriteria();
-        //handleFocusedObservation(userLocation, animal)
+    /*
+        * adds animal to currentAnimals
+        * auto filters the observations
+        * focuses on the one closest to the user's location
+    */ 
+    const handleAddSearchAnimal = (animal: AnimalSchema) => {
+        addAnimal(animal);
+        autoFilterCriteria();
+        const closestObservation = getClosestObservation({userLocation: userLocation!, animalName: animal.name})
+        if (closestObservation) observations.setFocused(closestObservation);
     }
 
-    /*
-        useEffect(() => {
-            if (!focusedObservation) return;
-            gotToLocation(focusedObservation.location)
-        }, [focusedObservation])
     
-    */ 
-
+    useEffect(() => {
+        if (!observations.focused) return;
+        goToLocation({coords: observations.focused.location} as any)
+    }, [observations.focused])
+    
+     
     useEffect(() => {
         if (currentAnimals.length == 0) return;
         autoFilterCriteria();
@@ -272,7 +277,7 @@ const MapScreen = ({route, navigation}: Props) => {
              />
             <SearchBarModal
                 currentAnimals={currentAnimals}
-                addAnimal={addAnimal}
+                addAnimal={handleAddSearchAnimal}
                 animalList={observations.animals}
                 visible={isSearchBarFocused}
                 onClose={() => setSearchBarFocused(false)}

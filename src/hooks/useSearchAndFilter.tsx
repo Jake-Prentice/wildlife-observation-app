@@ -69,11 +69,12 @@ const useSearchAndFilter = () => {
     });
 
     //get the closest observation to the user's location
+    type ClosestObservation = ObservationSchema & {id: string} | null;
     const getClosestObservation = (
         {userLocation, animalName}: 
         {userLocation: Location.LocationObject, animalName: string}
-    ) => {
-        let closestObservation = null;
+    ): ClosestObservation => {
+        let closestObservation: ClosestObservation = null;
         let minDistance = Infinity;
         observations.data.forEach(observation => {
             if (observation.animalName.some(a => a.name === animalName)) {
