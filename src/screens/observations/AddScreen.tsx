@@ -6,7 +6,7 @@ import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, ScrollView,
 import useCamera, { UseCamera } from '@/hooks/useCamera';
 import styles from './style';
 import ImageOrPlaceholder from '@/components/ImageOrPlaceholder';
-import {ButtonSpinner} from "@gluestack-ui/themed"
+import {ButtonSpinner, Spinner, set} from "@gluestack-ui/themed"
 import { useObservations } from '@/contexts/ObservationContext';
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -53,6 +53,8 @@ const AddObservationScreen = ({ route, navigation }: Props) => {
 
     const [animalName, setAnimalName] = useState('');
     const [description, setDescription] = useState('');
+    const [error, setError] = useState('');
+
 
     //technically this is scuffed since you're making another useCamera, does it matter? Idk, sort out later
     const image1 = useCamera(route.params?.image);
@@ -62,8 +64,18 @@ const AddObservationScreen = ({ route, navigation }: Props) => {
     const handleHelpPress = () => {};
   
     const handleSubmitPress = async () => {
-        if (!animalName || !description) return; //TODO - error handling
-        if (!image1.current && !image2.current && !image3.current) return; //TODO - error handling
+        if (!animalName) {
+          setError("Please enter the animal's name. If you are unsure, an AI classifier is available via the 'Help' button")
+          return;
+        } //error handling
+        if(!description) {
+          setError("Please enter a description e.g. where or what time of day you spotted the animal")
+          return;
+        }
+        if (!image1.current && !image2.current && !image3.current) {
+          setError("Please attach at least 1 image")
+          return;
+        } //error handling
 
         await observations.add({animalName, description, images: [image1, image2, image3]}); 
         //navigate to map screen, it should focus to the new observation
@@ -107,10 +119,10 @@ const AddObservationScreen = ({ route, navigation }: Props) => {
             multiline
           />
         </View>
+        {error ? <Text style={styles.error}>{error}</Text> : null}
         <LinearGradient style={[styles.submitButton]} colors={["#005FEF", "#3d8afe"]}>
         <TouchableOpacity onPress={handleSubmitPress} style={{width:'50%',alignItems:'center'}}>
-            {observations.isUploading && <ButtonSpinner mr="$1" />}
-          <Text style={styles.submitButtonText}>Submit</Text>
+        {observations.isUploading ? <Spinner color="white"/> : <Text style={styles.submitButtonText}>Submit</Text> }
         </TouchableOpacity>
         </LinearGradient>
       </ScrollView>

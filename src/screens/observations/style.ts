@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
       borderBottomWidth:1,
       borderColor:'gray',
       padding:10,
-      marginRight:30,
+      marginRight:20,
       borderRadius:2
     },
     helpButton: {
@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
     nameContainer: {
       flexDirection:'row',
       alignItems:'center',
-      marginBottom: marginBottom/2,
+      marginBottom:marginBottom/2,
       padding:10
     },
     label: {
@@ -124,6 +124,7 @@ const styles = StyleSheet.create({
       padding: 10,
       borderRadius: 5,
       height: 100,
+      marginBottom:marginBottom,
       textAlignVertical: 'top',
     },
     submitButton: {
@@ -168,7 +169,12 @@ const styles = StyleSheet.create({
     animalNameText: {
       fontSize:16
     },
-
+    error: {
+      color: 'red',
+      marginBottom: 10,
+      alignSelf:'center',
+      textAlign:'center'
+    },
     animalNameIcon: {
       paddingLeft: 10,
 
