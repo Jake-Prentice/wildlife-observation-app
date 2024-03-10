@@ -186,6 +186,8 @@ const MapScreen = ({route, navigation}: Props) => {
         }
         handleAddSearchAnimal(animal);
         // observations.setFocused(observation);
+        addAnimal(animal);
+        autoFilterCriteria();
         goToLocation({coords: observation.location} as any, "close")
     }
 
