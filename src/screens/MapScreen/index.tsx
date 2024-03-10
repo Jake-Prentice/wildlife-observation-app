@@ -16,8 +16,8 @@ import useSearchAndFilter, { CurrentAnimal, FilteredObservation } from '@/hooks/
 
 //the latitudeDelta and longitudeDelta determine the zoom level of the map
 const defaultZoomDistance = { 
-    latitudeDelta: 0.0922,
-    longitudeDelta: 0.0421,
+    latitudeDelta: 0.0622,
+    longitudeDelta: 0.0221,
 }
 
 //sort the types out JAKE!
@@ -144,16 +144,22 @@ const MapScreen = ({route, navigation}: Props) => {
     const [isListModalActive, setListModalActive] = useState(false);
     const [isFilterModalActive, setFilterModalActive] = useState(false);
 
-    //animates to some location
-    const goToLocation = (location: Location.LocationObject | undefined) => {
+    //animates to a given location on the map
+    const goToLocation = (location: Location.LocationObject | undefined, zoomDistance: "close" | "far" = "far") => {
+        const zoom = zoomDistance === "far" ? defaultZoomDistance : {latitudeDelta: 0.003, longitudeDelta: 0.003};
         if (mapRef.current && location) {
             mapRef.current.animateToRegion({
                 latitude: location.coords.latitude,
                 longitude: location.coords.longitude,
-                ...defaultZoomDistance
+                ...zoom
             }, 500); // 500 ms animation
         }
     };
+
+    const focusOnClosestObservationTo = (animalName: string) => {
+        const closestObservation = getClosestObservation({userLocation: userLocation!, animalName})
+        if (closestObservation) observations.setFocused(closestObservation);
+    }
 
     /*
         * adds animal to currentAnimals
@@ -163,8 +169,7 @@ const MapScreen = ({route, navigation}: Props) => {
     const handleAddSearchAnimal = (animal: AnimalSchema) => {
         addAnimal(animal);
         autoFilterCriteria();
-        const closestObservation = getClosestObservation({userLocation: userLocation!, animalName: animal.name})
-        if (closestObservation) observations.setFocused(closestObservation);
+        focusOnClosestObservationTo(animal.name);
     }
 
     /*
@@ -178,25 +183,24 @@ const MapScreen = ({route, navigation}: Props) => {
             id: observation.animalName[0].refId,
             hasScienceInfo: false
         }
-        addAnimal(animal);
-        autoFilterCriteria();
+        handleAddSearchAnimal(animal);
         observations.setFocused(observation);
     }
 
+    //will go to focused observation if there is one
     useEffect(() => {
         if (!observations.focused) return;
-        goToLocation({coords: observations.focused.location} as any)
+        goToLocation({coords: observations.focused.location} as any, "close")
     }, [observations.focused])
     
+    //handle auto-focusing on newest observation coming from the AddScreen screen
     useEffect(() => {
         if (!route?.params?.newObservation) return;
         handleNewObservation(route.params.newObservation);
     }, [route.params?.newObservation])
 
-    //makes sure to ask for location permissions
+    //on initial rendering of the map: asks permissions and focus on user's current location    
     useEffect(() => {
-        //don't want to constantly poll for a location if there already is one set,
-        //it takes soooo long to load current location!
         (async () => {
             let { status } = await Location.requestForegroundPermissionsAsync();
             if (status !== 'granted') {
@@ -293,11 +297,13 @@ const MapScreen = ({route, navigation}: Props) => {
                 onClose={() => setFilterModalActive(false)}
             />
             <ListModal 
+                focusOnClosestObservationTo={focusOnClosestObservationTo}
                 changeAnimalColor={changeAnimalColor}
                 onDeleteAnimal={deleteAnimal}
                 currentAnimals={currentAnimals}
                 isVisible={isListModalActive}
                 onClose={() => setListModalActive(false)}
+                setIsVisible={setListModalActive}
             />
         </View>
     );

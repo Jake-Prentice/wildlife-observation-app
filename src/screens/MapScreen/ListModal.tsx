@@ -1,4 +1,4 @@
-import { View, Text, Modal, StyleSheet, TouchableOpacity, ScrollView, Button } from 'react-native'
+import { View, Text, Modal, StyleSheet, TouchableOpacity, ScrollView, Button, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { AntDesign } from '@expo/vector-icons';
 import { AnimalName, ObservationSchema } from '@/services/schemas';
@@ -11,11 +11,13 @@ type Props = {
     onClose: () => void; 
     onDeleteAnimal: (id: string) => void;
     currentAnimals: CurrentAnimal[];
-    changeAnimalColor: UseSearchBarFilter["changeAnimalColor"]
+    changeAnimalColor: UseSearchBarFilter["changeAnimalColor"];
+    focusOnClosestObservationTo: (animalName: string) => void;
+    setIsVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const ListModal = (
-    {isVisible, onClose, onDeleteAnimal, currentAnimals, changeAnimalColor}: Props
+    {isVisible, onClose, onDeleteAnimal, currentAnimals, changeAnimalColor, focusOnClosestObservationTo, setIsVisible}: Props
 ) => {
 
   const [showColorPicker, setShowColorPicker] = useState(false);
@@ -34,6 +36,21 @@ const ListModal = (
       id: currentAnimal?.id!
     });
     setShowColorPicker(false);
+  }
+
+  const onItemPress = (animalName: string) => {
+      Alert.alert(
+          'Find animal',
+          'would you like me to find the closest ' + animalName + '?',
+          [
+              { text: 'Yes', onPress: () => {
+                focusOnClosestObservationTo(animalName)
+                setIsVisible(false);
+              }}, 
+              { text: 'No', style: 'cancel' },
+          ], 
+          { cancelable: true }
+      );
   }
 
   return (
@@ -77,9 +94,9 @@ const ListModal = (
                 {currentAnimals.length > 0 ? currentAnimals.map((animal, index) => (
 
                   <View key={index} style={styles.listItem}>
-                    <View style={styles.itemTextContainer}>
+                    <TouchableOpacity onPress={() => onItemPress(animal.name)} style={styles.itemTextContainer}>
                       <Text>{animal.name}</Text>
-                    </View>
+                    </TouchableOpacity>
                     <TouchableOpacity style={styles.changeColorButton} onPress={() => onColorPalettePress(animal)}>
                       <Ionicons name="color-palette-sharp" size={24} color={animal.color} />
                     </TouchableOpacity>
