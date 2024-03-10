@@ -1,51 +1,8 @@
 import { View, Text } from 'react-native'
 import React, { useEffect, useMemo, useState } from 'react'
 import { AnimalName, AnimalSchema, ObservationSchema } from '@/services/schemas'
-import { IObservationsValue, useObservations } from '@/contexts/ObservationContext';
-
-/*
-===from @/services/schemas.ts===
-
-export type UserStatSchema = {
-    uid: string;
-    numObservations: number;
-    contributions: number;
-}
-
-export type UseRef = {
-    refId: string;
-    name: string;
-}
-
-export type AnimalName = {
-    refId: string;
-    name: string;
-    upvotes: number
-}
-
-export type ObservationSchema = {
-    user: {
-        refId: string;
-        name: string;
-    }
-    animalName: AnimalName[];
-    location: {
-        latitude: number;
-        longitude: number;
-        radius: number;
-    }
-    timestamp: string;
-    images: string[]
-    description: string;
-}
-  
-export type AnimalSchema = {
-    id: string;
-    name: string;
-    hasScienceInfo: boolean;
-} 
-  
-*/ 
+import { IObservationsValue, haversineDistance, useObservations } from '@/contexts/ObservationContext';
+import * as Location from 'expo-location';
 
 export type CurrentAnimal = {
     id: string;
@@ -110,6 +67,28 @@ const useSearchAndFilter = () => {
         startTime: new Date().setHours(0, 0, 0, 0), //set initial time to 12:00 AM,
         endTime: new Date().setHours(23, 59, 0, 0) //set initial time to 11:59 PM
     });
+
+    //get the closest observation to the user's location
+    const getClosestObservation = (
+        {userLocation, animalName}: 
+        {userLocation: Location.LocationObject, animalName: string}
+    ) => {
+        let closestObservation = null;
+        let minDistance = Infinity;
+        observations.data.forEach(observation => {
+            if (observation.animalName.some(a => a.name === animalName)) {
+                const distance = haversineDistance(
+                    userLocation.coords.latitude, userLocation.coords.longitude,
+                    observation.location.latitude, observation.location.longitude 
+                );
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    closestObservation = observation;
+                }
+            }
+        });
+        return closestObservation;
+    }
 
     //auto adjusts the filterCriteria to show all the currentAnimals added by the user
     const autoFilterCriteria = () => {
@@ -206,7 +185,8 @@ const useSearchAndFilter = () => {
         deleteAnimal,
         changeDateTimeFilter,
         changeAnimalColor,
-        autoFilterCriteria
+        autoFilterCriteria,
+        getClosestObservation
     }
 }
 

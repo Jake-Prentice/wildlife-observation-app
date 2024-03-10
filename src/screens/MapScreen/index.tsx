@@ -127,7 +127,8 @@ const MapScreen = ({route, navigation}: Props) => {
         changeDateTimeFilter,
         filterCriteria,
         changeAnimalColor,
-        autoFilterCriteria
+        autoFilterCriteria,
+        getClosestObservation
     } = useSearchAndFilter();
 
     //map states
@@ -170,6 +171,7 @@ const MapScreen = ({route, navigation}: Props) => {
     useEffect(() => {
         if (currentAnimals.length == 0) return;
         autoFilterCriteria();
+        console.log("closest to: ", currentAnimals[0].name, " ", getClosestObservation({userLocation: userLocation!, animalName: currentAnimals[0].name}))
     }, [currentAnimals])
 
     useEffect(() => {console.log({filterCriteria})}, [filterCriteria])
