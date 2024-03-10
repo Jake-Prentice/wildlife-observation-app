@@ -36,13 +36,12 @@ const getLocationInfo = (images: UseCamera[]) => {
     if (images.length > 1) {
         const radius = images.reduce((maxDistance, image) => {
             const distance = haversineDistance(
-                centroid.latitude, centroid.longitude,
+                location.latitude, location.longitude,
                 image?.current?.exif?.GPSLatitude, image?.current?.exif?.GPSLongitude
             );
             return Math.max(maxDistance, distance);
         }, 0);
-        //adjust threshold as needed
-        if (radius > 0.1) location.radius = radius;
+        location.radius = radius
     }
     return location;
 }
