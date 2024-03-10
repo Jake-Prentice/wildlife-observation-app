@@ -126,7 +126,8 @@ const MapScreen = ({route, navigation}: Props) => {
         deleteAnimal,
         changeDateTimeFilter,
         filterCriteria,
-        changeAnimalColor
+        changeAnimalColor,
+        autoFilterCriteria
     } = useSearchAndFilter();
 
     //map states
@@ -165,6 +166,13 @@ const MapScreen = ({route, navigation}: Props) => {
         }, [focusedObservation])
     
     */ 
+
+    useEffect(() => {
+        if (currentAnimals.length == 0) return;
+        autoFilterCriteria();
+    }, [currentAnimals])
+
+    useEffect(() => {console.log({filterCriteria})}, [filterCriteria])
 
     //control the region of the map displayed,
     //by the currentLocation state

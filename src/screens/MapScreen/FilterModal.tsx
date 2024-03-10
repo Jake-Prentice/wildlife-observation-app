@@ -33,6 +33,11 @@ const FilterModal = (
           (endDate <= currentDate) && (startDate <= currentDate) 
   }, [startDate, endDate, startTime, endTime])
 
+  useEffect(() => {
+    setStartDate(filterCriteria.startDate);
+    setEndDate(filterCriteria.endDate);
+  }, [filterCriteria])
+  
   const onChangeStartDate = (event: any, selectedDate:any) => {
     const currentDate = selectedDate || startDate;
     setStartDate(currentDate);  

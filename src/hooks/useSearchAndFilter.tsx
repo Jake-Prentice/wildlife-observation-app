@@ -3,6 +3,50 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { AnimalName, AnimalSchema, ObservationSchema } from '@/services/schemas'
 import { IObservationsValue, useObservations } from '@/contexts/ObservationContext';
 
+/*
+===from @/services/schemas.ts===
+
+export type UserStatSchema = {
+    uid: string;
+    numObservations: number;
+    contributions: number;
+}
+
+export type UseRef = {
+    refId: string;
+    name: string;
+}
+
+export type AnimalName = {
+    refId: string;
+    name: string;
+    upvotes: number
+}
+
+export type ObservationSchema = {
+    user: {
+        refId: string;
+        name: string;
+    }
+    animalName: AnimalName[];
+    location: {
+        latitude: number;
+        longitude: number;
+        radius: number;
+    }
+    timestamp: string;
+    images: string[]
+    description: string;
+}
+  
+export type AnimalSchema = {
+    id: string;
+    name: string;
+    hasScienceInfo: boolean;
+} 
+  
+*/ 
+
 export type CurrentAnimal = {
     id: string;
     name: string;
@@ -67,8 +111,24 @@ const useSearchAndFilter = () => {
         endTime: new Date().setHours(23, 59, 0, 0) //set initial time to 11:59 PM
     });
 
+    //auto adjusts the filterCriteria to show all the currentAnimals added by the user
     const autoFilterCriteria = () => {
-
+        // Filter observations to include only those with animal names present in currentAnimals
+        const relevantObservations = observations.data.filter(observation =>
+            observation.animalName.some(animalName =>
+                currentAnimals.some(currentAnimal => currentAnimal.id === animalName.refId)
+            )
+        );
+        if (relevantObservations.length === 0) return;
+        // Extract timestamps and sort them to find the earliest and latest
+        const timestamps = relevantObservations.map(observation => new Date(observation.timestamp).getTime()).sort((a, b) => a - b);
+        // Update filterCriteria with the earliest and latest observation dates
+        changeDateTimeFilter({
+            startDate: new Date(timestamps[0]), 
+            endDate: new Date(timestamps[timestamps.length - 1]), 
+            startTime: new Date().setHours(0,0,0,0), 
+            endTime: new Date().setHours(23,59,0,0)}
+        );
     }
     
     const changeDateTimeFilter = ({startDate, endDate, startTime, endTime}: FilterCriteria) => {
@@ -145,7 +205,8 @@ const useSearchAndFilter = () => {
         addAnimal,
         deleteAnimal,
         changeDateTimeFilter,
-        changeAnimalColor
+        changeAnimalColor,
+        autoFilterCriteria
     }
 }
 
