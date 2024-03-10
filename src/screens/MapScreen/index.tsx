@@ -135,9 +135,10 @@ const MapScreen = ({route, navigation}: Props) => {
     const [currentLocation, setCurrentLocation] = useState<Location.LocationObject | undefined>(undefined);
     const [userLocation, setUserLocation] = useState<Location.LocationObject | undefined>(undefined);
     const [mapType, setMapType] = useState<'standard' | 'hybrid'>('standard');
-    const [errorMsg, setErrorMsg] = useState<string | null>(null);
-    const mapRef = useRef<MapView>(null);
     const [currentMarker, setCurrentMarker] = useState<FilteredObservation | null>(null);
+    const [errorMsg, setErrorMsg] = useState<string | null>(null);
+    
+    const mapRef = useRef<MapView>(null);
     //search bar states
     const [isSearchBarFocused, setSearchBarFocused] = useState(false);    
     const [isListModalActive, setListModalActive] = useState(false);
@@ -166,27 +167,31 @@ const MapScreen = ({route, navigation}: Props) => {
         if (closestObservation) observations.setFocused(closestObservation);
     }
 
-    
+    /*
+        * adds new-observation to currentAnimals
+        * auto filters to accomodate new-observation
+        * focuses on new-observation
+    */
+    const handleNewObservation = (observation: ObservationSchema) => {
+        const animal = {
+            name: observation.animalName[0].name,
+            id: observation.animalName[0].refId,
+            hasScienceInfo: false
+        }
+        addAnimal(animal);
+        autoFilterCriteria();
+        observations.setFocused(observation);
+    }
+
     useEffect(() => {
         if (!observations.focused) return;
         goToLocation({coords: observations.focused.location} as any)
     }, [observations.focused])
     
-     
     useEffect(() => {
-        if (currentAnimals.length == 0) return;
-        autoFilterCriteria();
-        console.log("closest to: ", currentAnimals[0].name, " ", getClosestObservation({userLocation: userLocation!, animalName: currentAnimals[0].name}))
-    }, [currentAnimals])
-
-    useEffect(() => {console.log({filterCriteria})}, [filterCriteria])
-
-    //control the region of the map displayed,
-    //by the currentLocation state
-    useEffect(() => {
-        if (!mapRef.current || !currentLocation) return
-        goToLocation(currentLocation);
-    }, [currentLocation])
+        if (!route?.params?.newObservation) return;
+        handleNewObservation(route.params.newObservation);
+    }, [route.params?.newObservation])
 
     //makes sure to ask for location permissions
     useEffect(() => {
@@ -200,10 +205,7 @@ const MapScreen = ({route, navigation}: Props) => {
             }
             let location = await Location.getCurrentPositionAsync({accuracy: Location.Accuracy.Lowest});
             setUserLocation(location);
-            //if no location is set, set the current location to the user's location,
-            //if coming from the add observation screen, it will focus on that newest observation
-            if (route.params?.initialLocation) setCurrentLocation(route.params.initialLocation);
-            else setCurrentLocation(location);
+            goToLocation(location);
         })();
     }, []);
     

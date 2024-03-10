@@ -77,14 +77,9 @@ const AddObservationScreen = ({ route, navigation }: Props) => {
           return;
         } //error handling
 
-        await observations.add({animalName, description, images: [image1, image2, image3]}); 
+        const newObservation = await observations.add({animalName, description, images: [image1, image2, image3]}); 
         //navigate to map screen, it should focus to the new observation
-        navigation.navigate('Main', {screen: 'Map', params: {initialLocation: {
-            coords: {
-              latitude: observations.newObservation?.location.latitude,
-              longitude: observations.newObservation?.location.longitude
-            } 
-        }}});
+        navigation.navigate('Main', {screen: 'Map', params: {newObservation}});
     };
   
     return (

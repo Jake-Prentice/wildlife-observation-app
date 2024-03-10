@@ -79,7 +79,7 @@ export interface IObservationsValue {
     //the id gets added in the onSnapshot
     data: (ObservationSchema & {id: string})[];
     animals: AnimalSchema[]; 
-    add: (observation: {animalName: string, description: string, images: UseCamera[]}) => Promise<void>;
+    add: (observation: {animalName: string, description: string, images: UseCamera[]}) => Promise<ObservationSchema>;
     isUploading: boolean;
     focused: ObservationSchema | null;
     setFocused: React.Dispatch<React.SetStateAction<ObservationSchema | null>>;
@@ -139,13 +139,14 @@ export const ObservationProvider = ({ children }: { children: React.ReactNode })
         observation.timestamp = getMostRecentTimestamp(filteredImages).toISOString();
         observation.location = getLocationInfo(filteredImages);
         //upload to firebase
+        let res = null;
         try{ 
-            const res = await services.addObservation(observation);
+            res = await services.addObservation(observation);
             setIsUploading(false);
-            setFocused(res);
         }catch(err){
            throw err;
         }
+        return res;
     }
 
     //look for changes in observations db and update it's state
