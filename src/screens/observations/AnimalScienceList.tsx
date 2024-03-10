@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, FlatList, TouchableOpacity} from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { Animal, getAnimalScienceData } from '@/services/animals';
+import { Animal, Characteristics, getAnimalScienceData } from '@/services/animals';
 
 
 interface AnimalItemProps {
@@ -13,7 +13,14 @@ interface AnimalItemProps {
     
 const AnimalItem: React.FC<AnimalItemProps> = ({ data }) => {
     const [expanded, setExpanded] = useState(false);
-  
+    const potentialFields = ["wingspan","habitat"]//,"estimated_population_size"] population seems...inconsistent
+    const fieldNames = new Map(
+      [["wingspan","Wingspan"],["habitat","Habitat"],["estimated_population_size","Estimated population"]]
+
+    )
+    const renderField = (characteristic : string) => {
+      console.log("aaaa"); return <Text>{fieldNames.get(characteristic)}: {data.characteristics[characteristic as keyof Characteristics]}</Text>
+    }
     return (
       <TouchableOpacity style={styles.itemContainer} onPress={() => setExpanded(!expanded)}>
         <Text style={styles.itemTitle}>{data.name}</Text>
@@ -22,6 +29,8 @@ const AnimalItem: React.FC<AnimalItemProps> = ({ data }) => {
             <Text>Type: {data.characteristics.type}</Text>
             <Text>Diet: {data.characteristics.diet}</Text>
             <Text>Lifespan: {data.characteristics.lifespan}</Text>
+            {potentialFields.map((ch) => {return ch in data.characteristics ?  renderField(ch) : null})}
+            <Text>Scientific name: {data.taxonomy.scientific_name||"N/A"}</Text>
           </View>
         )}
       </TouchableOpacity>
@@ -60,6 +69,7 @@ const styles = StyleSheet.create({
       flex: 1,
       padding: 10,
       backgroundColor: '#d2d2d246',
+      borderRadius:10
     },
     itemContainer: {
         padding: 10,

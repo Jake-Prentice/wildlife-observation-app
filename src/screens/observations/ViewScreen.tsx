@@ -62,10 +62,10 @@ const ViewObservationScreen = ({ route }: Props) => {
               observationId={id}
           />
           </View>
-      <Text style={styles.label}>Description:</Text>
+      <Text style={styles.sectionLabel}>Description:</Text>
       <View style={styles.line} />
       <Text style={styles.textContent}>{currentObservation?.description}</Text>
-      <Text style={styles.label}>Gallery</Text>
+      <Text style={styles.sectionLabel}>Gallery</Text>
       <View style={styles.line} />
       <View style={styles.galleryImages}>
         {currentObservation?.images.map((imgUri, index) => (
@@ -77,7 +77,9 @@ const ViewObservationScreen = ({ route }: Props) => {
         ))}
       </View>
       <View style={styles.scienceInfoContainer}>
-        <Text style={styles.label}>Scientific Information: </Text>
+        <Text style={styles.sectionLabel}>Database matches: </Text>
+        <View style={styles.line} />
+        <Text style={styles.subtext}>click to expand species information</Text>
         <AnimalScienceList animalName={currentObservation?.animalName[0].name} />
       </View>
     </ScrollView>

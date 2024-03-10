@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     line: {
       borderBottomColor:'gray',
       borderBottomWidth:1,
-      marginBottom:5
+      //marginBottom:5
     },
     usernameText: {
       ///fontWeight: 'bold',
@@ -74,9 +74,13 @@ const styles = StyleSheet.create({
       marginBottom:marginBottom/2,
       padding:10
     },
+    sectionLabel: {
+      fontSize: 16,
+      marginBottom: -10,
+    },
     label: {
       fontSize: 16,
-      marginBottom: 5,
+      marginBottom:5
     },
     input: {
       borderWidth: 1,
@@ -97,7 +101,7 @@ const styles = StyleSheet.create({
       // borderWidth: 1,
       flexDirection: 'row',
       maxHeight:'30%',
-      justifyContent: 'space-between',
+      //justifyContent: 'space-between',
       alignItems: 'center',
       //marginBottom: marginBottom,
     },
@@ -141,7 +145,8 @@ const styles = StyleSheet.create({
       color: '#FFF',
     },
     textContent: {
-      paddingBottom:20,
+      marginTop:-10,
+      paddingBottom:10,
       marginHorizontal:2,
       color:'gray'
     },
@@ -177,15 +182,20 @@ const styles = StyleSheet.create({
     },
     animalNameIcon: {
       paddingLeft: 10,
-
       padding: 10,
       flex:0.2,
       justifyContent: 'center',
       alignItems: 'center',
     },
 
+    subtext:{
+      color:'gray',
+      marginTop:-5
+    },
+
     scienceInfoContainer: {
       marginTop: 20,
+      gap:15
       // padding: 10,
       // borderColor: '#000',
       // borderWidth: 1,
