@@ -158,7 +158,8 @@ const MapScreen = ({route, navigation}: Props) => {
 
     const focusOnClosestObservationTo = (animalName: string) => {
         const closestObservation = getClosestObservation({userLocation: userLocation!, animalName})
-        if (closestObservation) observations.setFocused(closestObservation);
+        // if (closestObservation) observations.setFocused(closestObservation);
+        if (closestObservation)   goToLocation({coords: closestObservation.location} as any, "close")
     }
 
     /*
@@ -184,10 +185,12 @@ const MapScreen = ({route, navigation}: Props) => {
             hasScienceInfo: false
         }
         handleAddSearchAnimal(animal);
-        observations.setFocused(observation);
+        // observations.setFocused(observation);
+        goToLocation({coords: observation.location} as any, "close")
     }
 
     //will go to focused observation if there is one
+    //**not getting used now**
     useEffect(() => {
         if (!observations.focused) return;
         goToLocation({coords: observations.focused.location} as any, "close")

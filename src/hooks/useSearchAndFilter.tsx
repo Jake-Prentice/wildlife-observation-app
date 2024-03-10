@@ -167,8 +167,9 @@ const useSearchAndFilter = () => {
             const startMinutes = toMinutesSinceMidnight(filterCriteria.startTime);
             const endMinutes = toMinutesSinceMidnight(filterCriteria.endTime);
             const dbTimeMinutes = toMinutesSinceMidnight(observationDate);
-
+            
             if (dbTimeMinutes < startMinutes || dbTimeMinutes > endMinutes) return;
+            console.log(observation.animalName[0].name,{observationDate})
             //add once all criteria is met
             filtered.push({...observation, color: currentAnimal.color });
         })
