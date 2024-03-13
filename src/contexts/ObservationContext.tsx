@@ -106,6 +106,8 @@ export const ObservationProvider = ({ children }: { children: React.ReactNode })
         {animalName: string, description: string, images: UseCamera[]}
     ) => {
         setIsUploading(true);
+
+        animalName = animalName.replace(/\s+/g, '').toLowerCase()
         
         const formatUser = {
             refId: user.info?.uid,
@@ -160,6 +162,7 @@ export const ObservationProvider = ({ children }: { children: React.ReactNode })
             ...(doc.data() as DocumentData) as ObservationSchema,
           }));
           setObservations(updatedObservations);
+          console.log("Observations loaded....")
         });
 
         return () => unsubscribe();
