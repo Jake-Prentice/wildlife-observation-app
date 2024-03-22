@@ -173,6 +173,7 @@ const useSearchAndFilter = () => {
             if (!currentAnimal) return;
             //filter criteria
             const observationDate = new Date(observation.timestamp);
+            const keepTime = new Date(observation.timestamp)
             observationDate.setHours(0, 0, 0, 0); //evaluate the dates at the same time
             //date criteria
             if (observationDate < filterCriteria.startDate) return;
@@ -180,7 +181,7 @@ const useSearchAndFilter = () => {
             //time criteria
             const startMinutes = toMinutesSinceMidnight(filterCriteria.startTime);
             const endMinutes = toMinutesSinceMidnight(filterCriteria.endTime);
-            const dbTimeMinutes = toMinutesSinceMidnight(observationDate);
+            const dbTimeMinutes = toMinutesSinceMidnight(keepTime);
             
             if (dbTimeMinutes < startMinutes || dbTimeMinutes > endMinutes) return;
             console.log(observation.animalName[0].name,{observationDate})
