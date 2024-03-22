@@ -17,6 +17,23 @@ type Props = {
   route: ViewScreenRouteProp;
 };
 
+const formatDate = (dateString: any) => {
+  const date = new Date(dateString);
+  
+  // Format the date as YYYY-MM-DD
+  const formattedDate = date.toISOString().split('T')[0];
+  
+  // Extract the time and remove milliseconds
+  const time = date.toISOString().split('T')[1].slice(0, 8);
+  
+  return `${formattedDate} at ${time}`;
+};
+
+const FormattedDateComponent = ({ dateString }: any) => {
+  return <Text style={styles.usernameText}>{formatDate(dateString)}</Text>;
+};
+
+
 const ViewObservationScreen = ({ route }: Props) => {
 
   const [modalVisible, setModalVisible] = useState(false);
@@ -47,6 +64,7 @@ const ViewObservationScreen = ({ route }: Props) => {
           
           <Text style={styles.animalNameBig}>{currentObservation?.animalName[0].name}</Text>
           <Text style={styles.usernameText}>Submitted by @{currentObservation?.user.name} </Text>
+          <FormattedDateComponent dateString={currentObservation?.timestamp} />
       </View>
       <View style={styles.animalNameButton}>
               <View>
