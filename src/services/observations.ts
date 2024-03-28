@@ -202,3 +202,7 @@ export const downvoteAnimalName = async (observationId: string, animalRefId: str
         animalName: updatedAnimalNames
     });
 };
+
+export {getImageBlob};
+export {uploadImage};
+export {uploadImages};
