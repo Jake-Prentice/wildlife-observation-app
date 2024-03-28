@@ -1,5 +1,5 @@
 import { View, Text } from 'react-native'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { AnimalName, AnimalSchema, ObservationSchema } from '@/services/schemas'
 import { IObservationsValue, haversineDistance, useObservations } from '@/contexts/ObservationContext';
 import * as Location from 'expo-location';
@@ -59,7 +59,7 @@ const useSearchAndFilter = () => {
 
     const [currentAnimals, setCurrentAnimals] = useState<CurrentAnimal[]>([]);
     const [focusedObservation, setFocusedObservation] = useState<ObservationSchema | null>(null);
-
+    const [activeAutofilter, setActiveAutofilter] = useState(false);
     //TODO - maybe initialise the start date to the earliest observation date
     const [filterCriteria, setFilterCriteria] = useState<FilterCriteria>({
         startDate: new Date(),
@@ -76,6 +76,7 @@ const useSearchAndFilter = () => {
     ): ClosestObservation => {
         let closestObservation: ClosestObservation = null;
         let minDistance = Infinity;
+        console.log("closest-observation: ", observations.data[0].animalName)
         observations.data.forEach(observation => {
             if (observation.animalName.some(a => a.name === animalName)) {
                 const distance = haversineDistance(
@@ -92,13 +93,14 @@ const useSearchAndFilter = () => {
     }
 
     //auto adjusts the filterCriteria to show all the currentAnimals added by the user
-    const autoFilterCriteria = () => {
+    const autoFilterCriteria = useCallback(() => {
         // Filter observations to include only those with animal names present in currentAnimals
         const relevantObservations = observations.data.filter(observation =>
             observation.animalName.some(animalName =>
                 currentAnimals.some(currentAnimal => currentAnimal.id === animalName.refId)
             )
         );
+        console.log("autofilter", {currentAnimals})
         if (relevantObservations.length === 0) return;
         // Extract timestamps and sort them to find the earliest and latest
         const timestamps = relevantObservations.map(observation => new Date(observation.timestamp).getTime()).sort((a, b) => a - b);
@@ -109,7 +111,7 @@ const useSearchAndFilter = () => {
             startTime: new Date().setHours(0,0,0,0), 
             endTime: new Date().setHours(23,59,0,0)}
         );
-    }
+    }, [currentAnimals, observations.data, filterCriteria])
     
     const changeDateTimeFilter = ({startDate, endDate, startTime, endTime}: FilterCriteria) => {
         startDate.setHours(0, 0, 0, 0);
@@ -126,13 +128,24 @@ const useSearchAndFilter = () => {
         }))
     }
 
-    const addAnimal = (animal: AnimalSchema) => {
+    useEffect(() => {
+        if (activeAutofilter) {
+            autoFilterCriteria();
+            setActiveAutofilter(false);
+        }
+    }, [currentAnimals])
+
+    const addAnimal = useCallback((animal: AnimalSchema) => {
         //must be unique
         if (currentAnimals.some(a => a.id === animal.id)) return;
+        console.log("added animal")
         const newAnimal = {...animal, color: getRandomHexColor()} as CurrentAnimal; 
         // generate random color
         setCurrentAnimals((prev) => [...prev, newAnimal]);
-    }
+        console.log("add-animal", {currentAnimals})
+        console.log("add-animal", {newAnimal})
+        autoFilterCriteria()
+    }, [currentAnimals, autoFilterCriteria])
 
     //remove animal with id from currentAnimals
     const deleteAnimal = (id: string) => {
@@ -150,6 +163,7 @@ const useSearchAndFilter = () => {
     }
 
     const filteredObservations = useMemo(()=> {
+        console.log("filtering observations...")
        const filtered: FilteredObservation[] = []
         observations.data.forEach((observation, index) => {
             //sort by upvotes first
@@ -159,6 +173,7 @@ const useSearchAndFilter = () => {
             if (!currentAnimal) return;
             //filter criteria
             const observationDate = new Date(observation.timestamp);
+            const keepTime = new Date(observation.timestamp)
             observationDate.setHours(0, 0, 0, 0); //evaluate the dates at the same time
             //date criteria
             if (observationDate < filterCriteria.startDate) return;
@@ -166,7 +181,7 @@ const useSearchAndFilter = () => {
             //time criteria
             const startMinutes = toMinutesSinceMidnight(filterCriteria.startTime);
             const endMinutes = toMinutesSinceMidnight(filterCriteria.endTime);
-            const dbTimeMinutes = toMinutesSinceMidnight(observationDate);
+            const dbTimeMinutes = toMinutesSinceMidnight(keepTime);
             
             if (dbTimeMinutes < startMinutes || dbTimeMinutes > endMinutes) return;
             console.log(observation.animalName[0].name,{observationDate})
@@ -188,7 +203,8 @@ const useSearchAndFilter = () => {
         changeDateTimeFilter,
         changeAnimalColor,
         autoFilterCriteria,
-        getClosestObservation
+        getClosestObservation,
+        setActiveAutofilter
     }
 }
 

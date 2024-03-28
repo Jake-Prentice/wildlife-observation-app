@@ -32,7 +32,7 @@ export interface Animal {
 }
 
 export const getAnimalScienceData = async (animalName: string) => {
-    const url = `https://api.api-ninjas.com/v1/animals?name=${animalName}`;
+    const url = `https://api.api-ninjas.com/v1/animals?name=${animalName.replace(/[-_]/g, ' ')}`;
     const apiKey = 'z54DnmVfjpJ8jwZe+VC8Gg==HiSoum1k4MeGNzDc'; // Replace with your actual API key
     try {
       const response = await fetch(url, {headers: {'X-Api-Key': apiKey}});

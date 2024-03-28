@@ -93,14 +93,10 @@ const LoginScreen = ({navigation}: Props) => {
         <TextInput 
           style={styles.passwordField}
           placeholder={prop.placeholder}
-          //autoComplete='one-time-code'
           autoCapitalize="none"
           value={prop.val}
-          // onFocus={() => {setFocused(true)}}
-          // onBlur={() => {setFocused(false)}}
           onChangeText={prop.valHook}
           secureTextEntry={!visible}
-          onEndEditing={() => {prop.valHook(text)}}
           
         />
         <TouchableOpacity style={styles.passwordIcon} onPress={() => setVisible(!visible)}>

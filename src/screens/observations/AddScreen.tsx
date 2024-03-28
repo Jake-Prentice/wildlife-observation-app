@@ -22,6 +22,8 @@ desc box
 submit button styling
 */
 
+
+
 type Props = {
     route: AddScreenRouteProp;
     navigation: any;
@@ -94,9 +96,9 @@ const AddObservationScreen = ({ route, navigation }: Props) => {
             placeholder="Enter the name of the animal"
           />
           <TouchableOpacity onPress={handleHelpPress} style={styles.helpButton}>
-          <LinearGradient style={styles.gradient} colors={["#005FEF", "#3d8afe"]}>
-              <Text style={styles.helpButtonText}>Help</Text>
-          </LinearGradient>
+            <LinearGradient style={styles.gradient} colors={["#005FEF", "#3d8afe"]}>
+                <Text style={styles.helpButtonText}>Help</Text>
+            </LinearGradient>
         </TouchableOpacity>
         </View>
         <View style={styles.imagePickerContainer}>
@@ -116,8 +118,8 @@ const AddObservationScreen = ({ route, navigation }: Props) => {
         </View>
         {error ? <Text style={styles.error}>{error}</Text> : null}
         <LinearGradient style={[styles.submitButton]} colors={["#005FEF", "#3d8afe"]}>
-        <TouchableOpacity onPress={handleSubmitPress} style={{width:'50%',alignItems:'center'}}>
-        {observations.isUploading ? <Spinner color="white"/> : <Text style={styles.submitButtonText}>Submit</Text> }
+        <TouchableOpacity onPress={handleSubmitPress} style={{width:'100%',alignItems:'center'}}>
+          {observations.isUploading ? <Spinner color="white"/> : <Text style={styles.submitButtonText}>Submit</Text> }
         </TouchableOpacity>
         </LinearGradient>
       </ScrollView>

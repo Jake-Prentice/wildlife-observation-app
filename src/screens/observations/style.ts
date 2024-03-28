@@ -10,6 +10,7 @@ const styles = StyleSheet.create({
         width: "100%",
         padding: 13,
         backgroundColor: "white",
+        gap: 20
     },
     scrollContainer: {
       padding: 13,
@@ -72,7 +73,7 @@ const styles = StyleSheet.create({
       flexDirection:'row',
       alignItems:'center',
       marginBottom:marginBottom/2,
-      padding:10
+      marginTop: 30
     },
     sectionLabel: {
       fontSize: 16,

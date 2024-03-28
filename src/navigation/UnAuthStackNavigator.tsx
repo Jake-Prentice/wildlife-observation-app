@@ -10,7 +10,7 @@ export type UnAuthStackParamList = {
 
 const UnAuthStackNavigator = () => {
   return (
-    <UnauthStack.Navigator>
+    <UnauthStack.Navigator screenOptions={{headerShown: false}} >
       <UnauthStack.Screen name="Login" component={LoginScreen} />
       <UnauthStack.Screen name="Register" component={RegisterScreen} />
     </UnauthStack.Navigator>

@@ -129,10 +129,11 @@ const MapScreen = ({route, navigation}: Props) => {
         changeAnimalColor,
         autoFilterCriteria,
         getClosestObservation,
+        setActiveAutofilter
     } = useSearchAndFilter();
 
     //map states
-    const [currentLocation, setCurrentLocation] = useState<Location.LocationObject | undefined>(undefined);
+    // const [currentLocation, setCurrentLocation] = useState<Location.LocationObject | undefined>(undefined);
     const [userLocation, setUserLocation] = useState<Location.LocationObject | undefined>(undefined);
     const [mapType, setMapType] = useState<'standard' | 'hybrid'>('standard');
     const [currentMarker, setCurrentMarker] = useState<FilteredObservation | null>(null);
@@ -158,8 +159,10 @@ const MapScreen = ({route, navigation}: Props) => {
 
     const focusOnClosestObservationTo = (animalName: string) => {
         const closestObservation = getClosestObservation({userLocation: userLocation!, animalName})
-        // if (closestObservation) observations.setFocused(closestObservation);
-        if (closestObservation)   goToLocation({coords: closestObservation.location} as any, "close")
+        if (closestObservation)   {
+            goToLocation({coords: closestObservation.location} as any, "close")
+            observations.setFocused(closestObservation)
+        }
     }
 
     /*
@@ -169,7 +172,7 @@ const MapScreen = ({route, navigation}: Props) => {
     */ 
     const handleAddSearchAnimal = (animal: AnimalSchema) => {
         addAnimal(animal);
-        autoFilterCriteria();
+        setActiveAutofilter(true)
         focusOnClosestObservationTo(animal.name);
     }
 
@@ -184,8 +187,9 @@ const MapScreen = ({route, navigation}: Props) => {
             id: observation.animalName[0].refId,
             hasScienceInfo: false
         }
-        handleAddSearchAnimal(animal);
-        // observations.setFocused(observation);
+        addAnimal(animal);
+        setActiveAutofilter(true);
+        observations.setFocused(observation);
         goToLocation({coords: observation.location} as any, "close")
     }
 

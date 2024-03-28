@@ -22,7 +22,7 @@ const UserProfileScreen = () => {
     return (
         <View style={styles.container}>
             <View style={styles.usernameBox}>
-                <Text style={styles.title}>Logged in as: {user.info?.displayName}</Text>
+                <Text style={styles.title}>Logged in as: @{user.info?.displayName}</Text>
                 <Button
                 onPress={user.logout}
                 size="md"

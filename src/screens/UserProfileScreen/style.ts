@@ -8,7 +8,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     title: {
-        fontSize: 20,
+        fontSize: 15,
         //borderWidth:5,
         //borderColor:'gray',
         //fontWeight: 'bold',
